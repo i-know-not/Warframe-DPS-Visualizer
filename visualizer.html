@@ -1,0 +1,146 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="visualizer.css" />
+<script src="visualizer.js"></script>
+
+<script>
+    document.onreadystatechange=function()
+    {
+        if (document.readyState=="complete")
+        {
+            visualizer.initialize();
+        }
+    }
+</script>
+
+<title>Damage Visualizer</title>
+
+</head>
+<body>
+<h1>Damage Visualizer</h1>
+
+<div id="container">
+
+</div>
+
+<div id="templateContainer">
+    <div class="build" id="build##" style="display:none;">
+
+        <div class="buildMenu">
+            <h2>1</h2>
+        </div>
+
+        <div class="wepPanel panel">
+
+            <h3 class="hPanel">Weapon</h3>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iWeaponDamage">Weapon Damage</label>
+                <input class="iStatInput" type="number" step="0.1" id="iWeaponDamage##" name="Weapon Damage" value="100.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iWeaponMultishot">Pellets</label>
+                <input class="iStatInput" type="number" step="0.1" id="iWeaponMultishot##" name="Weapon Multishot" value="1.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iWeaponCC">Critical Chance %</label>
+                <input class="iStatInput" type="number" step="0.1" id="iWeaponCC##" name="Weapon Critical Chance" value="10.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iWeaponCD">Critical Damage</label>
+                <input class="iStatInput" type="number" step="0.1" id="iWeaponCD##" name="Weapon Critical Damage" value="2.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iWeaponFR">Fire Rate</label>
+                <input class="iStatInput" type="number" step="0.1" id="iWeaponFR##" name="Weapon Fire Rate" value="10.000" />
+            </div>
+
+        </div>
+
+        <div class="modPanel panel">
+
+            <h3 class="hPanel">Mods</h3>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModBaseDamage">Base Damage</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModBaseDamage##" name="Mod Base Damage" value="165.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModElementalDamage">Elemental Damage</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModElementalDamage##" name="Mod Elemental Damage" value="120.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModMultishot">Multishot</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModMultishot##" name="Mod Multishot" value="90.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModCC">Critical Chance %</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModCC##" name="Mod Critical Chance" value="150.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModCD">Critical Damage</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModCD##" name="Mod Critical Damage" value="120.000" />
+            </div>
+
+            <div class="dStatInput">
+                <label class="lStatInput" for="iModFR">Fire Rate</label>
+                <input class="iStatInput" type="number" step="0.1" id="iModFR##" name="Mod Fire Rate" value="0.000" />
+            </div>
+
+        </div>
+        
+        
+        <div class="DPSPanel panel">
+            <h3 class="hPanel">DPS</h3>
+            <div id="dpsVal##">
+                DPS
+            </div>
+            <div class="DPSDisp" id="dpsDisp##">
+                <div class="dispOrigin" id="dispOrigin##">
+                    <!--
+                    <div id="baseDBlk0DmgEle##" class="dispBlkSide baseDisp" style="z-index: 11; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ( 2em);"></div>
+                    <div id="baseDBlk0DmgCri##" class="dispBlkSide baseDisp" style="z-index: 10; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk0EleCri##" class="dispBlkSide baseDisp" style="z-index: 10; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk1DmgEle##" class="dispBlkSide baseDisp" style="z-index: 10; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk1DmgCri##" class="dispBlkSide baseDisp" style="z-index: 11; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ( 2em);"></div>
+                    <div id="baseDBlk1EleCri##" class="dispBlkSide baseDisp" style="z-index: 11; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ( 2em);"></div>
+                    
+                    <div id="baseCBlk0DmgEle##" class="dispBlkSide baseDisp" style="z-index: 01; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ(-2em);"></div>
+                    <div id="baseCBlk0DmgCri##" class="dispBlkSide baseDisp" style="z-index: 00; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ(-2em) translateX( 4em);"></div>
+                    <div id="baseCBlk0EleCri##" class="dispBlkSide baseDisp" style="z-index: 00; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ(-2em) translateY(-4em);"></div>
+                    <div id="baseCBlk1DmgEle##" class="dispBlkSide baseDisp" style="z-index: 00; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ(-6em);"></div>
+                    <div id="baseCBlk1DmgCri##" class="dispBlkSide baseDisp" style="z-index: 01; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ( 2em) translateX( 4em);;"></div>
+                    <div id="baseCBlk1EleCri##" class="dispBlkSide baseDisp" style="z-index: 01; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ( 2em) translateY(-4em);;"></div>
+                    -->
+                    
+                    <!--
+                    <div id="baseDBlk0DmgEle##" class="dispBlkSide baseDisp" style="z-index:01; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ( 2em);"></div>
+                    <div id="baseDBlk0DmgCri##" class="dispBlkSide baseDisp" style="z-index:00; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk0EleCri##" class="dispBlkSide baseDisp" style="z-index:00; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk1DmgEle##" class="dispBlkSide baseDisp" style="z-index:00; transform:perspective(1000px) rotateX(-30deg) rotateY(-30deg) translateZ(-2em);"></div>
+                    <div id="baseDBlk1DmgCri##" class="dispBlkSide baseDisp" style="z-index:01; transform:perspective(1000px) rotateX(-30deg) rotateY( 60deg) translateZ( 2em);"></div>
+                    <div id="baseDBlk1EleCri##" class="dispBlkSide baseDisp" style="z-index:01; transform:perspective(1000px) rotateX( 60deg) rotateZ( 30deg) translateZ( 2em);"></div>-->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div id="footer" style="position:absolute;">
+    <div id="footerText">
+        footer text
+    </div>
+</div>
+
+</body>
+</html>

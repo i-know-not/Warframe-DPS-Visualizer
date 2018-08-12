@@ -1,0 +1,189 @@
+body
+{
+    padding:0;
+    color:#505050;
+    font-family:trebuchet ms,helvetica,sans-serif;
+}
+
+h1
+{
+    margin:0.5em;
+    font-weight:normal;
+    font-size:2em;
+}
+
+h2
+{
+    margin:0.5em;
+    font-size:1.5em;
+}
+
+div
+{
+    overflow:hidden;
+}
+
+p
+{
+    margin:0.5em;
+}
+
+input
+{
+    color:#505050;
+}
+
+h3.hPanel
+{
+    margin:0;
+    padding:0.25em 1em 0.25em 0.5em;
+    font-size:1.1em;
+    font-weight:normal;
+    /*
+    background:white;
+    color:#a8a8a8;
+    */
+    background-color:#a8a8a8;
+    color:white;
+}
+
+.build
+{
+    display:inline-flex;
+    margin:0.5em;
+    border-radius:0.5em;
+    overflow:hidden;
+    border:1px solid #a8a8a8;
+    /*
+    background-color:#a8a8a8;
+    */
+    background-color:white;
+}
+
+.buildMenu
+{
+    min-width:3em;
+    width:3em;
+    margin:0 0.5em 0 0;
+    border:none;
+    text-align:center;
+    vertical-align:center;
+    /*
+    background:white;
+    color:#a8a8a8;
+    */
+    background-color:#a8a8a8;
+    color:white;
+}
+
+.panel
+{
+    margin:0.5em 0.5em 0.5em 0;
+    border:1px solid white;
+    /*
+    background-color:#a8a8a8;
+    color:white;
+    */
+    border:1px solid #a8a8a8;
+    background:white;
+}
+
+.panel > *
+{
+    margin:0.5em;
+}
+
+.wepPanel
+{
+    min-width:14em;
+    width:14em;
+}
+
+.modPanel
+{
+    min-width:14em;
+    width:14em;
+}
+
+.DPSPanel
+{
+    min-width:40em;
+    width:40em;
+}
+
+.dStatInput
+{
+    overflow:visible;
+    margin:0.5em;
+}
+
+.iStatInput
+{
+    float:right;
+    width:4em;
+    padding:0;
+    text-align:right;
+    font-size:1em;
+    font-family:trebuchet ms,helvetica,sans-serif;
+    /*
+    border:1px solid white;
+    background-color:#a8a8a8;
+    color:white;
+    */
+    /*border:1px solid white;*/
+    border:none;
+    background-color:white;
+}
+
+.iStatInput:hover,
+.iStatInput:focus
+{
+    /*border:1px solid #a8a8a8;*/
+    border:none;
+    box-shadow:0 0 0 1px #a8a8a8;
+}
+
+.iStatInput::-webkit-inner-spin-button,
+.iStatInput::-webkit-outer-spin-button
+{
+    -webkit-appearance:none;
+    margin:0;
+}
+
+.DPSDisp
+{
+    position:relative;
+    width:39em;
+    height:25em;
+}
+
+.dispOrigin
+{
+    position:absolute;
+    left:25%;
+    top:75%;
+    transition: all 1s;
+    overflow:visible;
+}
+
+.dispBlkSide
+{
+    position:absolute;
+    top:0;
+    left:0;
+    width:1em;
+    height:1em;
+    box-shadow:0 0 0 1px black inset;
+    transition: all 1s;
+    /*background-color:#dfdfdfbf;*/
+}
+
+.baseDisp
+{
+    background-color:#dfdfdf7f;
+}
+
+#container
+{
+    overflow-x:scroll;
+}
