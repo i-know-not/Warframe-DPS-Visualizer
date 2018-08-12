@@ -160,9 +160,9 @@ h3.hPanel
 .dispOrigin
 {
     position:absolute;
-    left:25%;
-    top:75%;
-    transition: all 1s;
+    left:10%;
+    top:50%;
+    transition: all 0.5s;
     overflow:visible;
 }
 
@@ -174,13 +174,38 @@ h3.hPanel
     width:1em;
     height:1em;
     box-shadow:0 0 0 1px black inset;
-    transition: all 1s;
+    transition: all 0.5s;
     /*background-color:#dfdfdfbf;*/
 }
 
 .baseDisp
 {
     background-color:#dfdfdf7f;
+}
+
+.dmgeDisp
+{
+    background-color:#9f1f1f3f;
+}
+
+.elemDisp
+{
+    background-color:#2f7f2f3f;
+}
+
+.multDisp
+{
+    background-color:#006fdf3f;
+}
+
+.bcrtDisp
+{
+    background-color:#7f7f3f00;
+}
+
+.critDisp
+{
+    background-color:#dfdf002f;
 }
 
 #container

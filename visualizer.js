@@ -53,12 +53,19 @@ var visualizer=new function()
             yT = y-height/2;
             zT = z-depth/2;
             
-            sides[0b000].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 000deg) translateZ('+pushTransforms[0b000]+'em)';
-            sides[0b001].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 180deg) translateZ('+pushTransforms[0b001]+'em)';
-            sides[0b010].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY(-090deg) translateZ('+pushTransforms[0b010]+'em)';
-            sides[0b011].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 090deg) translateZ('+pushTransforms[0b011]+'em)';
-            sides[0b100].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX(-090deg) rotateY( 000deg) translateZ('+pushTransforms[0b100]+'em)';
-            sides[0b101].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 090deg) rotateY( 000deg) translateZ('+pushTransforms[0b101]+'em)';
+            // sides[0b000].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 000deg) translateZ('+pushTransforms[0b000]+'em)';
+            // sides[0b001].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 180deg) translateZ('+pushTransforms[0b001]+'em)';
+            // sides[0b010].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY(-090deg) translateZ('+pushTransforms[0b010]+'em)';
+            // sides[0b011].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 090deg) translateZ('+pushTransforms[0b011]+'em)';
+            // sides[0b100].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX(-090deg) rotateY( 000deg) translateZ('+pushTransforms[0b100]+'em)';
+            // sides[0b101].style.transform = 'translate3d(-50%,-50%,0) perspective(100em) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 090deg) rotateY( 000deg) translateZ('+pushTransforms[0b101]+'em)';
+            
+            sides[0b000].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 000deg) translateZ('+pushTransforms[0b000]+'em)';
+            sides[0b001].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 180deg) translateZ('+pushTransforms[0b001]+'em)';
+            sides[0b010].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY(-090deg) translateZ('+pushTransforms[0b010]+'em)';
+            sides[0b011].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 090deg) translateZ('+pushTransforms[0b011]+'em)';
+            sides[0b100].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX(-090deg) rotateY( 000deg) translateZ('+pushTransforms[0b100]+'em)';
+            sides[0b101].style.transform = 'translate3d(-50%,-50%,0) rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 090deg) rotateY( 000deg) translateZ('+pushTransforms[0b101]+'em)';
             
             azimuthMod = azimuth % Math.PI*2;
             
@@ -114,39 +121,6 @@ var visualizer=new function()
         this.setTransform(0,0,0,2,2,2,-Math.PI/6,-Math.PI/6,1);
     }
     
-    /*
-    this.generateBoxSideTransformVals = function(side,azimuth,altitude)
-    {
-        var rotX = 0;
-        var rotY = 0;
-        switch(side)
-        {
-            case 0b000: //front
-                break;
-            case 0b001: //back
-                rotY = Math.PI;
-                break;
-            case 0b010: //left
-                rotY = -Math.PI/2;
-                break;
-            case 0b011: //right
-                rotY = Math.PI/2;
-                break;
-            case 0b100: //bottom
-                rotX = -Math.PI/2;
-                break;
-            case 0b101: //top
-                rotX = Math.PI/2;
-                break;
-        }
-        return [rotX, rotY];
-    }
-    
-    this.stringBoxSideTransformVals = function()
-    {
-    }
-    */
-    
     function build(id)
     {
         var i;
@@ -160,14 +134,18 @@ var visualizer=new function()
         var DOMDPSVal;
         var DOMDPSDispOrigin;
         var DOMDPSBaseBox;
+        var DOMDPSDmgeBox;
         var DOMDPSElemBox;
         var DOMDPSMultBox;
+        var DOMDPSBCrtBox;
         var DOMDPSCritBox;
         
         var baseDamageBox;
+        var dmgeModBox;
         var elemModBox;
         var multModBox;
-        var critModBox;
+        var baseCritBox;
+        var critModdedBox;
         
         var idStr;
         var descendantList;
@@ -196,14 +174,60 @@ var visualizer=new function()
         
         this.updateDPS = function()
         {
-            unmoddedDPS = params['WepDamage'] * (1+(params['WepCC']/100*(params['WepCD']-1))) * params['WepFR'];
-            moddedDPS = params['WepDamage'] * (1+params['ModDamage']/100) * (1+params['ModElemental']/100) * (1+params['ModMultishot']/100)* (1+(params['WepCC']*(1+params['ModCC']/100)/100*(params['WepCD']*(1+params['ModCD']/100)-1))) * params['WepFR']*(1+params['ModFR']/100);
+            var baseDamageDim;
+            var modDamageWidth;
+            var modElementalWidth;
+            var modElementalHeight;
+            var modMultishotHeight;
+            var modMultishotDepth;
+            var baseCritWidth;
+            var baseCritDepth;
+            var moddedCritWidth;
+            var moddedCritDepth;
+            
+            var modDamageBonus = params['ModDamage']/100;
+            var modDamageFactor = 1+modDamageBonus;
+            var modElementalBonus = params['ModElemental']/100;
+            var modElementalFactor = 1+modElementalBonus;
+            var modMultishotBonus = params['ModMultishot']/100;
+            var modMultishotFactor = 1+modMultishotBonus;
+            var baseCritChance = params['WepCC']/100;
+            var baseCritBonus = params['WepCD']-1;
+            var moddedCritChance = baseCritChance * (1+params['ModCC']/100);
+            var moddedCritBonus = params['WepCD']*(1+params['ModCD']/100)-1;
+            unmoddedDPS = params['WepDamage'] * (1+baseCritChance*baseCritBonus) * params['WepFR'];
+            moddedDPS = params['WepDamage'] * modDamageFactor * modElementalFactor * modMultishotFactor * (1+moddedCritChance*moddedCritBonus) * params['WepFR']*(1+params['ModFR']/100);
             console.log(unmoddedDPS);
             console.log(moddedDPS);
             DOMDPSVal.innerHTML=moddedDPS.toFixed(3);
             
-            baseDamageDim = Math.pow(params['WepDamage'],1/3.);
+            baseDamageDim = Math.pow(params['WepDamage'],1/3.)*0.75;
+            modDamageWidth = baseDamageDim * modDamageBonus;
+            modElementalWidth = baseDamageDim * modDamageFactor;
+            modElementalHeight = baseDamageDim * modElementalBonus;
+            modMultishotHeight = baseDamageDim * modElementalFactor;
+            modMultishotDepth = baseDamageDim * modMultishotBonus;
+            baseCritDepth = baseDamageDim * modMultishotFactor * baseCritChance;
+            baseCritWidth = modElementalWidth * baseCritBonus;
+            moddedCritDepth = baseDamageDim * modMultishotFactor * moddedCritChance;
+            moddedCritWidth = modElementalWidth * moddedCritBonus;
+            
             baseDamageBox.setTransform(0,0,0,baseDamageDim,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,1);
+            
+            dmgeModBox.setTransform(baseDamageDim,0,0,modDamageWidth,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,1);
+            DOMDPSDmgeBox.style.opacity = Math.abs(modDamageBonus) > 0.1 ? 1 : Math.abs(modDamageBonus)*10;
+            
+            elemModBox.setTransform(0,-baseDamageDim,0,modElementalWidth,modElementalHeight,baseDamageDim,viewAzimuth,viewAltitude,1);
+            DOMDPSElemBox.style.opacity = Math.abs(modElementalBonus) > 0.1 ? 1 : Math.abs(modElementalBonus)*10;
+            
+            multModBox.setTransform(0,0,-baseDamageDim,modElementalWidth,modMultishotHeight,modMultishotDepth,viewAzimuth,viewAltitude,1);
+            DOMDPSMultBox.style.opacity = Math.abs(modMultishotBonus) > 0.1 ? 1 : Math.abs(modMultishotBonus)*10;
+            
+            baseCritBox.setTransform(0,0,baseCritDepth,baseCritWidth,modMultishotHeight,baseCritDepth,viewAzimuth,viewAltitude,1);
+            //DOMDPSBCrtBox.style.opacity = 
+            
+            critModdedBox.setTransform(0,0,moddedCritDepth,moddedCritWidth,modMultishotHeight,moddedCritDepth,viewAzimuth,viewAltitude,1);
+            //DOMDPSCritBox.style.opacity = 
         }
         
         //get html template
@@ -244,30 +268,63 @@ var visualizer=new function()
         
         
         //construct graphics
-        DOMDPSVal = this.DOMBuild.querySelector('#dpsVal'+idStr);
         DOMDPSDisp = this.DOMBuild.querySelector('#dpsDisp'+idStr);
+        DOMDPSVal = DOMDPSDisp.querySelector('#dpsVal'+idStr);
         DOMDPSDispOrigin = this.DOMBuild.querySelector('#dispOrigin'+idStr);
         
-        DOMBaseBox = document.createElement('div');
-        DOMBaseBox.className = 'dispOrigin';
-        DOMBaseBox.id = 'baseBox'+idStr;
-        DOMBaseBox.style.zIndex = 0;
-        DOMDPSDispOrigin.appendChild(DOMBaseBox);
+        DOMDPSBaseBox = document.createElement('div');
+        DOMDPSBaseBox.className = 'dispOrigin';
+        DOMDPSBaseBox.id = 'baseBox'+idStr;
+        DOMDPSBaseBox.style.zIndex = 0+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSBaseBox);
         
-        DOMElemBox = document.createElement('div');
-        DOMElemBox.className = 'dispOrigin';
-        DOMElemBox.id = 'elemBox'+idStr;
-        DOMElemBox.style.zIndex = 1;
-        DOMDPSDispOrigin.appendChild(DOMElemBox);
+        DOMDPSDmgeBox = document.createElement('div');
+        DOMDPSDmgeBox.className = 'dispOrigin';
+        DOMDPSDmgeBox.id = 'baseBox'+idStr;
+        DOMDPSDmgeBox.style.zIndex = 1+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSDmgeBox);
         
-        DOMMultBox = document.createElement('div');
-        DOMMultBox.className = 'dispOrigin';
-        DOMMultBox.id = 'multBox'+idStr;
-        DOMMultBox.style.zIndex = -1;
-        DOMDPSDispOrigin.appendChild(DOMMultBox);
+        DOMDPSElemBox = document.createElement('div');
+        DOMDPSElemBox.className = 'dispOrigin';
+        DOMDPSElemBox.id = 'elemBox'+idStr;
+        DOMDPSElemBox.style.zIndex = 2+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSElemBox);
+        
+        DOMDPSMultBox = document.createElement('div');
+        DOMDPSMultBox.className = 'dispOrigin';
+        DOMDPSMultBox.id = 'multBox'+idStr;
+        DOMDPSMultBox.style.zIndex = -1+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSMultBox);
+        
+        DOMDPSBCrtBox = document.createElement('div');
+        DOMDPSBCrtBox.className = 'dispOrigin';
+        DOMDPSBCrtBox.id = 'bcrtBox'+idStr;
+        DOMDPSBCrtBox.style.zIndex = 3+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSBCrtBox);
+        
+        DOMDPSCritBox = document.createElement('div');
+        DOMDPSCritBox.className = 'dispOrigin';
+        DOMDPSCritBox.id = 'critBox'+idStr;
+        DOMDPSCritBox.style.zIndex = 4+100;
+        DOMDPSDispOrigin.appendChild(DOMDPSCritBox);
         
         baseDamageBox = new box('baseDisp');
-        baseDamageBox.setParent(DOMBaseBox);
+        baseDamageBox.setParent(DOMDPSBaseBox);
+        
+        dmgeModBox = new box('dmgeDisp');
+        dmgeModBox.setParent(DOMDPSDmgeBox);
+        
+        elemModBox = new box('elemDisp');
+        elemModBox.setParent(DOMDPSElemBox);
+        
+        multModBox = new box('multDisp');
+        multModBox.setParent(DOMDPSMultBox);
+        
+        baseCritBox = new box('bcrtDisp');
+        baseCritBox.setParent(DOMDPSBCrtBox);
+        
+        critModdedBox = new box('critDisp');
+        critModdedBox.setParent(DOMDPSCritBox);
         
         for (var paramName in DOMParams)
         {
