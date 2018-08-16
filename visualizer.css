@@ -3,6 +3,7 @@ body
     padding:0;
     color:#505050;
     font-family:trebuchet ms,helvetica,sans-serif;
+    font-size:16px;
 }
 
 h1
@@ -93,6 +94,21 @@ h3.hPanel
     margin:0.5em;
 }
 
+.panelForm
+{
+    margin:0;
+}
+
+.panelForm > *
+{
+    margin:0.5em;
+}
+
+.submitButton
+{
+    visibility:hidden;
+}
+
 .wepPanel
 {
     min-width:14em;
@@ -160,52 +176,74 @@ h3.hPanel
 .dispOrigin
 {
     position:absolute;
-    left:10%;
+    left:5%;
     top:50%;
-    transition: all 0.5s;
+    /*transition: all 0.5s;*/
     overflow:visible;
 }
 
 .dispBlkSide
 {
     position:absolute;
+    box-sizing:border-box;
     top:0;
     left:0;
     width:1em;
     height:1em;
-    box-shadow:0 0 0 1px black inset;
-    transition: all 0.5s;
+    border:0.5px solid black;
+    /*box-shadow:0 0 0 1px black inset;*/
+    /*transition: all 0.5s;*/
+    /*background-color:transparent !important;*/
+}
+
+.dispBlkBaffle
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:0;
+    left:0;
+    width:1em;
+    height:1em;
+    border:none !important;
+    /*transition: all 0.5s;*/
     /*background-color:#dfdfdfbf;*/
 }
 
 .baseDisp
 {
-    background-color:#dfdfdf7f;
+    background-color:#dfdfdf3f;
 }
 
 .dmgeDisp
 {
-    background-color:#9f1f1f3f;
+    background-color:#9f1f1f1f;
 }
 
 .elemDisp
 {
-    background-color:#2f7f2f3f;
+    background-color:#2f7f2f1f;
 }
 
 .multDisp
 {
-    background-color:#006fdf3f;
+    background-color:#006fdf1f;
 }
 
 .bcrtDisp
 {
     background-color:#7f7f3f00;
+    border:0.5px dashed black;
 }
 
-.critDisp
+.mcrtDisp
 {
-    background-color:#dfdf002f;
+    background-color:#dfdf001f;
+}
+
+.cdmgDisp
+{
+    background-color:transparent;
+    border:0.5px dashed black;
 }
 
 #container
