@@ -133,10 +133,12 @@ var visualizer=new function()
                 if (sides[i].style.zIndex == 0 && !showBackFace)
                 {
                     sides[i].style.display = 'none';
+                    //sides[i].style.visibility = 'hidden';
                 }
                 else
                 {
                     sides[i].style.display = 'block';
+                    //sides[i].style.visibility = 'inherit';
                 }
             }
             
@@ -369,6 +371,8 @@ var visualizer=new function()
         
         var DPSTimeRange = 6;
         
+        var scrollingEnabled = -1;
+        
         var animationStart = null;
         var animationLastT = null;
         var animationID = null;
@@ -437,8 +441,10 @@ var visualizer=new function()
             uparams['RateFactr'] = uparams['MRate']/uparams['WepFR'];
             
             uparams['WMagShots'] = Math.floor(uparams['WepMag']/uparams['WepCons']);
+            //uparams['WMagShots'] = animated ? uparams['WepMag']/uparams['WepCons'] : Math.floor(uparams['WepMag']/uparams['WepCons']);
             uparams['MMag'] = uparams['WepMag'] * (1+uparams['ModMag']/100);
             uparams['MMagShots'] = Math.floor(uparams['MMag']/uparams['WepCons']);
+            //uparams['MMagShots'] = animated ? uparams['MMag']/uparams['WepCons'] : Math.floor(uparams['MMag']/uparams['WepCons']);
             uparams['MReload'] = uparams['WepReload'] / (1+uparams['ModReload']/100);
             
             uparams['WMagTime'] = uparams['WMagShots'] / uparams['WepFR'];
@@ -477,6 +483,8 @@ var visualizer=new function()
             var rateModDeph;
             var rateModHeight;
             
+            //calculateDPS(uparams);
+            
             var azimuthMod = viewAzimuth % Math.PI*2;
             
             var RB = 2/3;
@@ -485,10 +493,12 @@ var visualizer=new function()
             var TDispStart = -1;
             var TDispEnd = DPSTimeRange + 1;
             
-            var WFirstShot = Math.floor(TDispStart*uparams['WepFR'])-1;
-            var WLastShot = Math.floor(TDispEnd*uparams['WepFR']);
-            var WNumShots = WLastShot - WFirstShot + 1;
             var WMagShots = Math.round(uparams['WMagShots']);
+            
+            var WFirstShot = Math.ceil(TDispStart/uparams['WCycleTime'])*WMagShots + Math.max(Math.floor(TDispStart%uparams['WCycleTime']*uparams['WepFR']),-WMagShots);
+            var WLastShot = Math.floor(TDispEnd/uparams['WCycleTime'])*WMagShots + Math.min(Math.ceil(TDispEnd%uparams['WCycleTime']*uparams['WepFR']),WMagShots);
+            
+            var WNumShots = WLastShot - WFirstShot + 1;
             WNumShots = WMagShots < 1 ? 0 : WNumShots;
             
             var WTOffset = uparams['WTimeScroll'] % uparams['WCycleTime'];
@@ -496,18 +506,18 @@ var visualizer=new function()
             var WShotOffset = Math.ceil(WTOffset*uparams['WepFR']);
             WShotOffset = Math.max(WShotOffset,0);
             
-            var MFirstShot = Math.floor(TDispStart*uparams['MRate'])-1;
-            var MLastShot = Math.floor(TDispEnd*uparams['MRate']);
-            var MNumShots = MLastShot - MFirstShot + 1;
             var MMagShots = Math.round(uparams['MMagShots']);
+            
+            var MFirstShot = Math.ceil(TDispStart/uparams['MCycleTime'])*MMagShots + Math.max(Math.floor(TDispStart%uparams['MCycleTime']*uparams['MRate']),-MMagShots);
+            var MLastShot = Math.floor(TDispEnd/uparams['MCycleTime'])*MMagShots + Math.min(Math.ceil(TDispEnd%uparams['MCycleTime']*uparams['MRate']),MMagShots);
+            
+            var MNumShots = MLastShot - MFirstShot + 1;
             MNumShots = MMagShots < 1 ? 0 : MNumShots;
             
             var MTOffset = uparams['MTimeScroll'] % uparams['MCycleTime'];
             MTOffset = MTOffset > uparams['MMagTime'] ? MTOffset - uparams['MCycleTime'] : MTOffset;
             var MShotOffset = Math.ceil(MTOffset*uparams['MRate']);
             MShotOffset = Math.max(MShotOffset,0);
-            
-            calculateDPS(uparams);
             
             //console.log(uparams['WDPS']);
             //console.log(uparams['MDPS']);
@@ -573,7 +583,7 @@ var visualizer=new function()
             }
             
             /*
-            var WNRows = Math.ceil(rateBaseWidth/4*DPSRateScale*uparams['WepFR']);
+            var WNRows = Math.min(Math.ceil(rateBaseWidth/4*DPSRateScale*uparams['WepFR']),WMagShots);
             
             for (var i = weaponRateDispBoxes.length-1; i >= WNumShots && i >= 1; i--)
             {
@@ -596,7 +606,7 @@ var visualizer=new function()
                 var magNo = Math.floor(shotNo/WMagShots);
                 shotNo = shotNo % WMagShots;
                 shotNo = shotNo < 0 ? shotNo + WMagShots : shotNo;
-                var rowNo = shotNo % WNRows
+                var rowNo = Math.round(shotNo % WNRows);
                 var xT = magNo * uparams['WCycleTime'] + shotNo / uparams['WepFR'] - WTOffset;
                 var xP = xT*4/DPSRateScale;
                 var opacity = 1;
@@ -611,11 +621,11 @@ var visualizer=new function()
                 
                 if (azimuthMod < Math.PI)
                 {
-                    weaponRateDispBoxes[i].DOMBox.style.zIndex = xI - rowNo*rowNo + 5000;
+                    weaponRateDispBoxes[i].DOMBox.style.zIndex = xI - Math.floor(rowNo/WNRows*WNumShots) + 5000;
                 }
                 else
                 {
-                    weaponRateDispBoxes[i].DOMBox.style.zIndex = -xI - rowNo*rowNo + 5000;
+                    weaponRateDispBoxes[i].DOMBox.style.zIndex = -xI + Math.floor(rowNo/WNRows*WNumShots)+ 5000;
                 }
                 
                 if (xT < -1 || xT > DPSTimeRange + 1)
@@ -631,7 +641,8 @@ var visualizer=new function()
             }
             */
             
-            var MNRows = Math.ceil(rateModWidth/4*DPSRateScale*uparams['MRate']);
+            var MNRows = Math.min(Math.ceil(rateModWidth/4*DPSRateScale*uparams['MRate']),MMagShots);
+            //var MNRows = Math.ceil(rateModWidth/4*DPSRateScale*uparams['MRate']);
             
             for (var i = moddedRateDispBoxes.length-1; i >= MNumShots && i >= 1; i--)
             {
@@ -652,7 +663,7 @@ var visualizer=new function()
                 var magNo = Math.floor(shotNo/MMagShots);
                 shotNo = shotNo % MMagShots;
                 shotNo = shotNo < 0 ? shotNo + MMagShots : shotNo;
-                var rowNo = shotNo % MNRows
+                var rowNo = Math.round(shotNo % MNRows);
                 var xT = magNo * uparams['MCycleTime'] + shotNo / uparams['MRate'] - MTOffset;
                 var xP = xT*4/DPSRateScale;
                 var opacity = 1-Math.exp(-0.05*rateModWidth);
@@ -667,20 +678,22 @@ var visualizer=new function()
                 
                 if (azimuthMod < Math.PI)
                 {
-                    moddedRateDispBoxes[i].DOMBox.style.zIndex = xI - rowNo*rowNo;
+                    moddedRateDispBoxes[i].DOMBox.style.zIndex = xI - Math.floor(rowNo/MNRows*MNumShots);
                 }
                 else
                 {
-                    moddedRateDispBoxes[i].DOMBox.style.zIndex = -xI - rowNo*rowNo;
+                    moddedRateDispBoxes[i].DOMBox.style.zIndex = -xI + Math.floor(rowNo/MNRows*MNumShots);;
                 }
                 
                 if (xT < -1 || xT > DPSTimeRange + 1)
                 {
-                    moddedRateDispBoxes[i].DOMBox.style.display = 'none';
+                    //moddedRateDispBoxes[i].DOMBox.style.display = 'none';
+                    moddedRateDispBoxes[i].DOMBox.style.visibility = 'hidden';
                 }
                 else
                 {
-                    moddedRateDispBoxes[i].DOMBox.style.display = 'block';
+                    //moddedRateDispBoxes[i].DOMBox.style.display = 'block';
+                    moddedRateDispBoxes[i].DOMBox.style.visibility = 'visible';
                     moddedRateDispBoxes[i].setTransform(xP,rateModHeight,-rowNo*rateModDepth,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateBorderScale);
                     moddedRateDispBoxes[i].DOMBox.style.opacity = opacity;
                 }
@@ -707,17 +720,31 @@ var visualizer=new function()
                 pParams['WTimeScroll'] = (timeStamp - animationStart - 500)/1000;
                 pParams['MTimeScroll'] = (timeStamp - animationStart - 500)/1000;
                 */
+                
                 if (transitionOngoing)
                 {
                     transitionOngoing = false;
-                    params['WTimeScroll'] = pParams['WTimeScroll'];
-                    params['MTimeScroll'] = pParams['MTimeScroll'];
+                    var endScrolling = false;
+                    if (scrollingEnabled == 0 || (scrollingEnabled == -1 && params['MCycleTime']*1.5 < DPSTimeRange))
+                    {
+                        endScrolling = true;
+                    }
+                    else
+                    {
+                        params['WTimeScroll'] = pParams['WTimeScroll'];
+                        params['MTimeScroll'] = pParams['MTimeScroll'];
+                    }
                     for (paramName in params)
                     {
                         pParams[paramName] = params[paramName];
                         vParams[paramName] = 0;
                     }
                     showDPS(params,false);
+                    if (endScrolling)
+                    {
+                        animationID = null;
+                        return;
+                    }
                 }
                 else
                 {
@@ -727,8 +754,6 @@ var visualizer=new function()
                     pParams['MTimeScroll'] = params['MTimeScroll'];
                     showDPS(params,true);
                 }
-                //animationID = null;
-                //return;
             }
             else
             {
@@ -756,6 +781,11 @@ var visualizer=new function()
         this.updateDPS = function(animate)
         {
             calculateDPS(params);
+            if (scrollingEnabled == 0 || (scrollingEnabled == -1 && params['MCycleTime']*1.5 < DPSTimeRange))
+            {
+                params['WTimeScroll'] = 0;
+                params['MTimeScroll'] = 0;
+            }
             
             if (!animate)
             {
@@ -769,8 +799,6 @@ var visualizer=new function()
                 animationID = null;
             }
             transitionOngoing = true;
-            //params['WTimeScroll'] = 0;
-            //params['MTimeScroll'] = 0;
             animationStart = null;
             animationLastT = null;
             animationID = window.requestAnimationFrame(animDPS);
@@ -879,8 +907,11 @@ var visualizer=new function()
     
     this.initialize=function()
     {
+        var templateContainer = document.getElementById('templateContainer');
         container = document.getElementById('container');
         DOMTemplate = document.getElementById('build_##');
+        templateContainer.removeChild(DOMTemplate);
+        
         builds.push(new build(0));
         container.appendChild(builds[0].DOMBuild);
         builds.push(new build(1));
