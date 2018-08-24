@@ -206,26 +206,38 @@ h3.hPanel
 
 .DPSShotDispOrigin
 {
-    transform:scale(0.2);
+    /*transform:scale(0.2);*/
     left:5%;
     top:20%;
 }
 
 .DPSRateDispOrigin
 {
-    transform:scale(0.1);
+    /*transform:scale(0.15);*/
     left:5%;
     top:50%;
 }
 
-.dispBlkSide
+.dispAxis
 {
     position:absolute;
     box-sizing:border-box;
     top:0;
     left:0;
     width:1em;
+    height:0.1em;
+    transform-origin:0 0;
+}
+
+.dispBlkSide
+{
+    position:absolute;
+    box-sizing:border-box;
+    bottom:0;
+    left:0;
+    width:1em;
     height:1em;
+    transform-origin:0 100%;
     border:1px solid black;
     /*box-shadow:0 0 0 1px black inset;*/
     /*transition: all 0.5s;*/
@@ -236,13 +248,24 @@ h3.hPanel
 {
     position:absolute;
     box-sizing:border-box;
-    top:0;
+    bottom:0;
     left:0;
     width:1em;
     height:1em;
+    transform-origin:0 100%;
     border:none !important;
     /*transition: all 0.5s;*/
     /*background-color:#dfdfdfbf;*/
+}
+
+.blackAxis
+{
+    background:black;
+}
+
+.redAxis
+{
+    background-color:rgba(127,0,0,0.5);
 }
 
 .baseDisp
@@ -265,7 +288,7 @@ h3.hPanel
     background-color:rgba(0  ,111,223,0.125);/*#006fdf1f;*/
 }
 
-.bcrtDisp
+.wcrtDisp
 {
     background-color:rgba(127,127, 64,0);/*#7f7f3f00;*/
     border:1px dashed rgba(  0,  0,  0,0.5);

@@ -4,14 +4,127 @@ var visualizer=new function()
     var builds = [];
     var container;
     
-    function baffleF(val,step)
+    function crossProd(u,v)
     {
-        return Math.floor(val/step)+1;
+        return [u[1]*v[2] - u[2]*v[1],
+                u[2]*v[0] - u[0]*v[2],
+                u[0]*v[1] - u[1]*v[0]];
     }
     
-    function baffleL(val,step)
+    function axis(idStr, axisName, extraClasses, zIndex, majInt, minInt)
     {
-        return Math.ceil(val/step)-1;
+        this.DOMAxis = document.createElement('div');
+        this.DOMAxis.className = 'dispOrigin';
+        this.DOMAxis.id = axisName+'Axis'+idStr;
+        this.DOMAxis.style.zIndex = zIndex+100;
+        
+        var line;
+        var majTickTemplate;
+        var minTickTemplate;
+        var majTicks = [];
+        var minTicks = [];
+        
+        line = document.createElement('div');
+        line.className = 'dispAxis ' + extraClasses;
+        
+        majTickTemplate = document.createElement('div');
+        majTickTemplate.className = 'dispAxis ' + extraClasses;
+        
+        var parentElement;
+        
+        this.DOMAxis.appendChild(line);
+        
+        this.setTransform = function(x,y,z,width,length,vector,normal,phase,azimuth,altitude,scale)
+        {
+            var perspectiveT = '';
+            var azimuthMod = azimuth % Math.PI*2;
+            var phaseMod = phase % 1;
+            phaseMod = phaseMod < 1 ? phaseMod + 1 : phaseMod;
+            
+            var across = crossProd(normal,vector);
+            var matrixStr = 'matrix3d(' +
+                vector[0]   +','+   vector[1]   +','+   vector[2]   +',0,'+
+                across[0]   +','+   across[1]   +','+   across[2]   +',0,'+
+                normal[0]   +','+   normal[1]   +','+   normal[2]   +',0,'+
+                '0,0,0,1)';
+            
+            line.style.width = length*scale+'em';
+            line.style.height = width*scale+'em';
+            
+            line.style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) '+matrixStr;
+            
+            
+            if (majInt == 0)
+            {
+                return;
+            }
+            
+            nMajTicks = Math.floor(length/majInt+1);
+            
+            for (var i = majTicks.length-1; i >= nMajTicks && i >= 0; i--)
+            {
+                this.DOMAxis.removeChild(majTicks.pop());
+            }
+            
+            for (var i = 0; i < nMajTicks; i++)
+            {
+                if (i >= majTicks.length)
+                {
+                    i = majTicks.push(majTickTemplate.cloneNode(true))-1;
+                    this.DOMAxis.appendChild(majTicks[i]);
+                }
+                
+                if (azimuthMod < Math.PI)
+                {
+                    majTicks[i].style.zIndex = i+1;
+                }
+                else
+                {
+                    majTicks[i].style.zIndex = nMajTicks-i;
+                }
+                
+                majTicks[i].style.width     = scale*width     + 'em';
+                majTicks[i].style.height    = scale*width     + 'em';
+                var xP = (i+phaseMod)*majInt;
+                majTicks[i].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) '+matrixStr+' translate3d('+xP*scale+'em,'+width*scale+'em,0)';
+                opacity = 1;
+                if (xP < 0)
+                {
+                    opacity = 0;
+                }
+                if (xP > length)
+                {
+                    opacity = 0;
+                }
+                opacity = Math.max(0,Math.min(opacity,1));
+                majTicks[i].style.opacity = opacity;
+                //xBaffles[i].style.visibility = "visible";
+            }
+            
+        }
+        
+        this.setParent = function(node)
+        {
+            this.removeParent();
+            parentElement = node;
+            node.appendChild(this.DOMAxis);
+        }
+        
+        this.removeParent = function()
+        {
+            if (parentElement != null)
+            {
+                parentElement.removeChild(this.DOMAxis);
+                parentElement = null;
+            }
+        }
+        
+        this.setZIndex = function(zIndex)
+        {
+            this.DOMAxis.style.zIndex = zIndex;
+        }
+        
+        this.setTransform(0,0,0,0.1,2,[1,0,0],[0,0,1],0,-Math.PI/6,-Math.PI/6,1);
     }
     
     function box(idStr, boxName, extraClasses, zIndex, showBackFace, baffleDist)
@@ -23,7 +136,8 @@ var visualizer=new function()
         
         var sideID = 0;
         var sides = [];
-        var pushTransforms = [];
+        var borderColor = '';
+        var sideColor = '';
         
         var baffleTemplate = document.createElement('div');
         baffleTemplate.className = 'dispBlkBaffle ' + extraClasses;
@@ -45,12 +159,17 @@ var visualizer=new function()
         
         for (sideID in sides)
         {
-            pushTransforms[sideID] = 0.5;
+            this.DOMBox.appendChild(sides[sideID]);
         }
         
-        for (sideID in sides)
+        function baffleF(val,step)
         {
-            this.DOMBox.appendChild(sides[sideID]);
+            return Math.floor(val/step)+1;
+        }
+        
+        function baffleL(val,step)
+        {
+            return Math.ceil(val/step)-1;
         }
         
         this.setTransform = function(x,y,z,width,height,depth,azimuth,altitude,scale)
@@ -59,33 +178,6 @@ var visualizer=new function()
             var perspectiveT = "";
             var azimuthMod = azimuth % Math.PI*2;
             var minDim;
-            
-            pushTransforms[0b000] = depth   /2;
-            pushTransforms[0b001] = depth   /2;
-            pushTransforms[0b010] = width   /2;
-            pushTransforms[0b011] = width   /2;
-            pushTransforms[0b100] = height  /2;
-            pushTransforms[0b101] = height  /2;
-            
-            
-            sides[0b000].style.width    = width     + 'em';
-            sides[0b001].style.width    = width     + 'em';
-            sides[0b000].style.height   = height    + 'em';
-            sides[0b001].style.height   = height    + 'em';
-            
-            sides[0b010].style.width    = depth     + 'em';
-            sides[0b011].style.width    = depth     + 'em';
-            sides[0b010].style.height   = height    + 'em';
-            sides[0b011].style.height   = height    + 'em';
-            
-            sides[0b100].style.width    = width     + 'em';
-            sides[0b101].style.width    = width     + 'em';
-            sides[0b100].style.height   = depth     + 'em';
-            sides[0b101].style.height   = depth     + 'em';
-            
-            var xT = x+width/2;
-            var yT = y-height/2;
-            var zT = z-depth/2;
             
             //perspectiveT = "perspective(100em) ";
             if (azimuthMod < Math.PI * 0.5)
@@ -142,24 +234,41 @@ var visualizer=new function()
                 }
             }
             
-            if (sides[0b000].style.zIndex != 0 || showBackFace)
-                sides[0b000].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 000deg) translateZ('+pushTransforms[0b000]+'em)';
-            if (sides[0b001].style.zIndex != 0 || showBackFace)
-                sides[0b001].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 180deg) translateZ('+pushTransforms[0b001]+'em)';
-            if (sides[0b010].style.zIndex != 0 || showBackFace)
-                sides[0b010].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY(-090deg) translateZ('+pushTransforms[0b010]+'em)';
-            if (sides[0b011].style.zIndex != 0 || showBackFace)
-                sides[0b011].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY( 090deg) translateZ('+pushTransforms[0b011]+'em)';
-            if (sides[0b100].style.zIndex != 0 || showBackFace)
-                sides[0b100].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX(-090deg) rotateY( 000deg) translateZ('+pushTransforms[0b100]+'em)';
-            if (sides[0b101].style.zIndex != 0 || showBackFace)
-                sides[0b101].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zT+'em) rotateX( 090deg) rotateY( 000deg) translateZ('+pushTransforms[0b101]+'em)';
+            sides[0b000].style.width    = scale*width     + 'em';
+            sides[0b001].style.width    = scale*width     + 'em';
+            sides[0b000].style.height   = scale*height    + 'em';
+            sides[0b001].style.height   = scale*height    + 'em';
             
+            sides[0b010].style.width    = scale*depth     + 'em';
+            sides[0b011].style.width    = scale*depth     + 'em';
+            sides[0b010].style.height   = scale*height    + 'em';
+            sides[0b011].style.height   = scale*height    + 'em';
+            
+            sides[0b100].style.width    = scale*width     + 'em';
+            sides[0b101].style.width    = scale*width     + 'em';
+            sides[0b100].style.height   = scale*depth     + 'em';
+            sides[0b101].style.height   = scale*depth     + 'em';
+            
+            if (sides[0b000].style.zIndex != 0 || showBackFace)
+                sides[0b000].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) rotateX( 000deg) rotateY( 000deg)';
+            if (sides[0b001].style.zIndex != 0 || showBackFace)
+                sides[0b001].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+width )*scale+'em,'+(y+0     )*scale+'em,'+(z-depth )*scale+'em) rotateX( 000deg) rotateY( 180deg)';
+            if (sides[0b010].style.zIndex != 0 || showBackFace)
+                sides[0b010].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z-depth )*scale+'em) rotateX( 000deg) rotateY(-090deg)';
+            if (sides[0b011].style.zIndex != 0 || showBackFace)
+                sides[0b011].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+width )*scale+'em,'+(y+0     )*scale+'em,'+(z-depth )*scale+'em) rotateX( 000deg) rotateY(-090deg)';
+            if (sides[0b100].style.zIndex != 0 || showBackFace)
+                sides[0b100].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z-depth )*scale+'em) rotateX(-090deg) rotateY( 000deg)';
+            if (sides[0b101].style.zIndex != 0 || showBackFace)
+                sides[0b101].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y-height)*scale+'em,'+(z+0     )*scale+'em) rotateX( 090deg) rotateY( 000deg)';
+            
+            /*
             var borderWidth = (scale == 0 ? scale : 1/scale);
             for (var i in sides)
             {
                 sides[i].style.borderWidth = borderWidth+'px';
             }
+            */
             
             minDim = Math.min(Math.abs(width),Math.abs(height),Math.abs(depth));
             this.DOMBox.style.opacity = minDim > baffleDist ? 1 : minDim;
@@ -177,7 +286,6 @@ var visualizer=new function()
             
             zF = baffleF(z-depth,baffleDist);
             zL = baffleL(z,baffleDist);
-            
             
             for (var i = xBaffles.length-1; i > xL-xF && i >= 0; i--)
             {
@@ -202,10 +310,10 @@ var visualizer=new function()
                     xBaffles[i].style.zIndex = xL-xF-i;
                 }
                 
-                xBaffles[i].style.width     = depth     + 'em';
-                xBaffles[i].style.height    = height    + 'em';
-                var xP = (xF + i)*baffleDist + width/2;
-                xBaffles[i].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xP+'em,'+yT+'em,'+zT+'em) rotateX( 000deg) rotateY(-090deg) translateZ('+pushTransforms[0b010]+'em)';
+                xBaffles[i].style.width     = scale*depth     + 'em';
+                xBaffles[i].style.height    = scale*height    + 'em';
+                var xP = (xF + i)*baffleDist;
+                xBaffles[i].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(xP      )*scale+'em,'+(y+0     )*scale+'em,'+(z-depth )*scale+'em) rotateX( 000deg) rotateY(-090deg)';
                 opacity = 1;
                 if (i == 0)
                 {
@@ -244,10 +352,10 @@ var visualizer=new function()
                     yBaffles[i].style.zIndex = yL-yF-i;
                 }
                 
-                yBaffles[i].style.width     = width     + 'em';
-                yBaffles[i].style.height    = depth     + 'em';
-                var yP = (yF + i)*baffleDist - height/2;
-                yBaffles[i].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yP+'em,'+zT+'em) rotateX(-090deg) rotateY( 000deg) translateZ('+pushTransforms[0b100]+'em)';
+                yBaffles[i].style.width     = scale*width     + 'em';
+                yBaffles[i].style.height    = scale*depth     + 'em';
+                var yP = (yF + i)*baffleDist;
+                yBaffles[i].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(yP      )*scale+'em,'+(z-depth )*scale+'em) rotateX(-090deg) rotateY( 000deg)';
                 opacity = 1;
                 if (i == 0)
                 {
@@ -286,10 +394,10 @@ var visualizer=new function()
                     zBaffles[i].style.zIndex = zL-zF-i;
                 }
                 
-                zBaffles[i].style.width     = width     + 'em';
-                zBaffles[i].style.height    = height    + 'em';
-                var zP = (zF + i)*baffleDist - depth/2;
-                zBaffles[i].style.transform = 'translate3d(-50%,-50%,0) '+perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+xT+'em,'+yT+'em,'+zP+'em) rotateX( 000deg) rotateY( 000deg) translateZ('+pushTransforms[0b000]+'em)';;
+                zBaffles[i].style.width     = scale*width     + 'em';
+                zBaffles[i].style.height    = scale*height    + 'em';
+                var zP = (zF + i)*baffleDist;
+                zBaffles[i].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(zP      )*scale+'em) rotateX( 000deg) rotateY( 000deg)';
                 opacity = 1;
                 if (i == 0)
                 {
@@ -326,6 +434,26 @@ var visualizer=new function()
             this.DOMBox.style.zIndex = zIndex;
         }
         
+        this.setBorderColor = function(color)
+        {
+            if (borderColor == color) {return;}
+            borderColor = color;
+            for (var i in sides)
+            {
+                sides[i].style.borderColor = color;
+            }
+        }
+        
+        this.setSideColor = function(color)
+        {
+            if (sideColor == color) {return;}
+            sideColor = color;
+            for (var i in sides)
+            {
+                sides[i].style.backgroundColor = color;
+            }
+        }
+        
         this.setTransform(0,0,0,2,2,2,-Math.PI/6,-Math.PI/6,1);
     }
     
@@ -356,20 +484,24 @@ var visualizer=new function()
         
         var DOMDPSRateDispOrigin;
         
+        var DOMAnimateChangeButton;
+        
         var shotDispBoxes = [];
         var moddedRateDispBoxes = [];
         var weaponRateDispBoxes = [];
+        var rateTimeAxis;
+        var rateFireAxis;
         var DPSDispBaffleDist = 5;
         
         var viewAzimuth = -Math.PI/6*1.2;
         var viewAltitude = -Math.PI/6*0.5;
         var DPSShotScale = 0.2;
-        var DPSShotBorderScale = DPSShotScale*2;
+        //var DPSShotBorderScale = DPSShotScale*2;
         
-        var DPSRateScale = 0.1;
-        var DPSRateBorderScale = DPSRateScale/2;
+        var DPSRateScale = 0.15;
+        //var DPSRateBorderScale = DPSRateScale/2;
         
-        var DPSTimeRange = 6;
+        var DPSTimeRange = 5;
         
         var scrollingEnabled = -1;
         
@@ -390,7 +522,9 @@ var visualizer=new function()
             else
             {
                 if (eventParamName.startsWith("Wep") && iValue < 0) {iValue = 0;}
-                if (eventParamName == "WepFR" && iValue < 1/69) {iValue = 1/60;}
+                if (eventParamName.startsWith("Mod") && iValue < -100) {iValue = -100;}
+                if (eventParamName == "WepFR" && iValue < 1/60) {iValue = 1/60;}
+                if (eventParamName == "WepCons" && iValue < 1/60) {iValue = 1/60;}
                 iElement.value = iValue.toFixed(3);
                 
                 if (params[eventParamName] != iValue)
@@ -424,6 +558,12 @@ var visualizer=new function()
         
         function calculateDPS(uparams)
         {
+            var oldWFR = uparams['WepFR'];
+            var oldMFR = uparams['MRate'];
+            oldWFR = oldWFR == null? 1 : oldWFR;
+            oldMFR = oldMFR == null? 1 : oldMFR;
+            
+            
             uparams['DmgeBonus'] = uparams['ModDamage']/100;
             uparams['DmgeFactr'] = 1+uparams['DmgeBonus'];
             uparams['ElemBonus'] = uparams['ModElemental']/100;
@@ -449,14 +589,18 @@ var visualizer=new function()
             
             uparams['WMagTime'] = uparams['WMagShots'] / uparams['WepFR'];
             uparams['WCycleTime'] = uparams['WMagTime'] + uparams['WepReload'];
+            uparams['WTimeScroll'] = uparams['WTimeScroll'] * oldWFR / uparams['WepFR'];
+            uparams['WTimeScroll'] = uparams['WTimeScroll'] % uparams['WCycleTime'];
             uparams['WTimeScroll'] = uparams['WTimeScroll'] > uparams['WMagTime'] ? uparams['WTimeScroll'] - uparams['WCycleTime'] : uparams['WTimeScroll'];
             uparams['MMagTime'] = uparams['MMagShots'] / uparams['MRate'];
             uparams['MCycleTime'] = uparams['MMagTime'] + uparams['MReload'];
+            uparams['MTimeScroll'] = uparams['MTimeScroll'] * oldMFR / uparams['MRate'];
+            uparams['MTimeScroll'] = uparams['MTimeScroll'] % uparams['MCycleTime'];
             uparams['MTimeScroll'] = uparams['MTimeScroll'] > uparams['MMagTime'] ? uparams['MTimeScroll'] - uparams['MCycleTime'] : uparams['MTimeScroll'];
             
             uparams['WShot'] = uparams['WepDamage'] * (1+uparams['WCrtProbl']*uparams['WCrtBonus']);
             uparams['MShot'] = uparams['WepDamage'] * uparams['DmgeFactr'] * uparams['ElemFactr'] * uparams['MultFactr'] * (1+uparams['MCrtProbl']*uparams['MCrtBonus']);
-            uparams['RShot'] = uparams['MShot'] / uparams['WShot'];
+            uparams['RShot'] = uparams['WShot'] == 0 ? 0 : uparams['MShot'] / uparams['WShot'];
             
             uparams['WDPS'] = uparams['WepDamage'] * (1+uparams['WCrtProbl']*uparams['WCrtBonus']) * uparams['WepFR'];
             uparams['MDPS'] = uparams['WepDamage'] * uparams['DmgeFactr'] * uparams['ElemFactr'] * uparams['MultFactr'] * (1+uparams['MCrtProbl']*uparams['MCrtBonus']) * uparams['MRate'];
@@ -487,7 +631,7 @@ var visualizer=new function()
             
             var azimuthMod = viewAzimuth % Math.PI*2;
             
-            var RB = 2/3;
+            var RB = 1;
             var RS = uparams['RShot']
             
             var TDispStart = -1;
@@ -543,44 +687,6 @@ var visualizer=new function()
             rateModDepth = Math.pow(rateModDepth,1/2) * rateBaseHeight;
             rateModWidth = rateModDepth;
             
-            if (!scrollOnly)
-            {
-                DOMDPSWShotVal.innerHTML=uparams['WShot'].toFixed(3);
-                DOMDPSMShotVal.innerHTML=uparams['MShot'].toFixed(3);
-                DOMDPSWDPSVal.innerHTML=uparams['WDPS'].toFixed(3);
-                DOMDPSMDPSVal.innerHTML=uparams['MDPS'].toFixed(3);
-                DOMDPSSDPSVal.innerHTML=uparams['SDPS'].toFixed(3);
-                
-                shotDispBoxes['DPSBase'].setTransform(0,0,0,baseDamageDim,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                
-                shotDispBoxes['DPSDmge'].setTransform(baseDamageDim,0,0,modDamageWidth,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                //shotDispBoxes['DPSDmge'].DOMBox.style.opacity = Math.abs(uparams['DmgeBonus']) > 0.1 ? 1 : Math.abs(uparams['DmgeBonus'])*10;
-                
-                shotDispBoxes['DPSElem'].setTransform(0,0,-baseDamageDim,modElementalWidth,baseDamageDim,modElementalDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                //shotDispBoxes['DPSElem'].DOMBox.style.opacity = Math.abs(uparams['ElemBonus']) > 0.1 ? 1 : Math.abs(uparams['ElemBonus'])*10;
-                
-                shotDispBoxes['DPSMult'].setTransform(0,modMultishotHeight,0,modElementalWidth,modMultishotHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                //shotDispBoxes['DPSMult'].DOMBox.style.opacity = Math.abs(uparams['MultBonus']) > 0.1 ? 1 : Math.abs(uparams['MultBonus'])*10;
-                
-                shotDispBoxes['DPSWCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['WCrtProbl'],0,weaponCritWidth,weaponCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = Math.abs(uparams['WCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['WCrtProbl'])*10;
-                
-                shotDispBoxes['DPSMCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['MCrtProbl'],0,moddedCritWidth,moddedCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = Math.abs(uparams['MCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['MCrtProbl'])*10;
-                
-                shotDispBoxes['DPSCDmg'].setTransform(modElementalWidth,modMultishotHeight,0,moddedCritWidth,baseDamageDim*uparams['MultFactr'],modMultishotDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                
-                // shotDispBoxes['DPSWCrt'].setTransform(0,0,weaponCritDepth,weaponCritWidth,modMultishotHeight,weaponCritDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                // //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = 
-                
-                // shotDispBoxes['DPSMCrt'].setTransform(0,0,moddedCritDepth,moddedCritWidth,modMultishotHeight,moddedCritDepth,viewAzimuth,viewAltitude,DPSShotBorderScale);
-                // //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = 
-                
-                //rateDispWBox.setTransform(0,rateBaseHeight,0,rateBaseWidth,rateBaseHeight,rateBaseDepth,viewAzimuth,viewAltitude,DPSRateBorderScale);
-                //rateDispBoxes['modb'].setTransform(0,rateModHeight,0,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateBorderScale);
-                //rateDispBoxes['modb'].DOMBox.style.opacity = 1-Math.exp(-0.05*rateModWidth);
-                //console.log(rateModWidth,Math.exp(-0.08*rateModWidth),rateDispBoxes['modb'].DOMBox.style.opacity);
-            }
             
             /*
             var WNRows = Math.min(Math.ceil(rateBaseWidth/4*DPSRateScale*uparams['WepFR']),WMagShots);
@@ -610,9 +716,11 @@ var visualizer=new function()
                 var xT = magNo * uparams['WCycleTime'] + shotNo / uparams['WepFR'] - WTOffset;
                 var xP = xT*4/DPSRateScale;
                 var opacity = 1;
+                var sideColor = 'rgba(223,223,223,0.25)';
                 if (xT < 0)
                 {
-                    opacity *= Math.max(1+xT,0);
+                    sideColor = 'rgb(127,0,0)';
+                    opacity = Math.max(1+xT,0);
                 }
                 else if (xT >= DPSTimeRange)
                 {
@@ -634,9 +742,10 @@ var visualizer=new function()
                 }
                 else
                 {
-                    weaponRateDispBoxes[i].DOMBox.style.visibility = 'visible';
-                    weaponRateDispBoxes[i].setTransform(xP,rateBaseHeight,-rowNo*rateBaseDepth,rateBaseWidth,rateBaseHeight,rateBaseDepth,viewAzimuth,viewAltitude,DPSRateBorderScale);
+                    weaponRateDispBoxes[i].setTransform(xP,0,-rowNo*rateBaseDepth,rateBaseWidth,rateBaseHeight,rateBaseDepth,viewAzimuth,viewAltitude,DPSRateScale);
+                    weaponRateDispBoxes[i].setSideColor(sideColor);
                     weaponRateDispBoxes[i].DOMBox.style.opacity = opacity;
+                    weaponRateDispBoxes[i].DOMBox.style.visibility = 'visible';
                 }
             }
             */
@@ -666,10 +775,14 @@ var visualizer=new function()
                 var rowNo = Math.round(shotNo % MNRows);
                 var xT = magNo * uparams['MCycleTime'] + shotNo / uparams['MRate'] - MTOffset;
                 var xP = xT*4/DPSRateScale;
-                var opacity = 1-Math.exp(-0.05*rateModWidth);
+                var opacity = 1-Math.exp(-0.05*Math.min(rateModWidth,rateModHeight));
+                var borderColor = 'black';
+                var sideColor = 'grey';
                 if (xT < 0)
                 {
-                    opacity *= Math.max(1+xT,0);
+                    sideColor = 'rgb(127,0,0)';
+                    borderColor = 'transparent';
+                    opacity = Math.max(1+xT,0);
                 }
                 else if (xT >= DPSTimeRange)
                 {
@@ -692,11 +805,56 @@ var visualizer=new function()
                 }
                 else
                 {
+                    moddedRateDispBoxes[i].setTransform(xP,rateModHeight,-rowNo*rateModDepth,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateScale);
+                    moddedRateDispBoxes[i].setSideColor(sideColor);
+                    moddedRateDispBoxes[i].setBorderColor(borderColor);
+                    moddedRateDispBoxes[i].DOMBox.style.opacity = opacity;
                     //moddedRateDispBoxes[i].DOMBox.style.display = 'block';
                     moddedRateDispBoxes[i].DOMBox.style.visibility = 'visible';
-                    moddedRateDispBoxes[i].setTransform(xP,rateModHeight,-rowNo*rateModDepth,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateBorderScale);
-                    moddedRateDispBoxes[i].DOMBox.style.opacity = opacity;
                 }
+            }
+            
+            rateTimeAxis.setTransform(4*TDispStart/DPSRateScale,Math.min(rateModHeight,60),0,0.25/DPSRateScale,4*(TDispEnd-TDispStart+8)/DPSRateScale,[1,0,0],[0,0,1],-uparams['MTimeScroll'],viewAzimuth,viewAltitude,DPSRateScale);
+            
+            if (!scrollOnly)
+            {
+                DOMDPSWShotVal.innerHTML=uparams['WShot'].toFixed(3);
+                DOMDPSMShotVal.innerHTML=uparams['MShot'].toFixed(3);
+                DOMDPSWDPSVal.innerHTML=uparams['WDPS'].toFixed(3);
+                DOMDPSMDPSVal.innerHTML=uparams['MDPS'].toFixed(3);
+                DOMDPSSDPSVal.innerHTML=uparams['SDPS'].toFixed(3);
+                
+                shotDispBoxes['DPSBase'].setTransform(0,0,0,baseDamageDim,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,DPSShotScale);
+                
+                shotDispBoxes['DPSDmge'].setTransform(baseDamageDim,0,0,modDamageWidth,baseDamageDim,baseDamageDim,viewAzimuth,viewAltitude,DPSShotScale);
+                //shotDispBoxes['DPSDmge'].DOMBox.style.opacity = Math.abs(uparams['DmgeBonus']) > 0.1 ? 1 : Math.abs(uparams['DmgeBonus'])*10;
+                
+                shotDispBoxes['DPSElem'].setTransform(0,0,-baseDamageDim,modElementalWidth,baseDamageDim,modElementalDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                //shotDispBoxes['DPSElem'].DOMBox.style.opacity = Math.abs(uparams['ElemBonus']) > 0.1 ? 1 : Math.abs(uparams['ElemBonus'])*10;
+                
+                shotDispBoxes['DPSMult'].setTransform(0,modMultishotHeight,0,modElementalWidth,modMultishotHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                //shotDispBoxes['DPSMult'].DOMBox.style.opacity = Math.abs(uparams['MultBonus']) > 0.1 ? 1 : Math.abs(uparams['MultBonus'])*10;
+                
+                shotDispBoxes['DPSWCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['WCrtProbl'],0,weaponCritWidth,weaponCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = Math.abs(uparams['WCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['WCrtProbl'])*10;
+                
+                shotDispBoxes['DPSMCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['MCrtProbl'],0,moddedCritWidth,moddedCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = Math.abs(uparams['MCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['MCrtProbl'])*10;
+                
+                shotDispBoxes['DPSCDmg'].setTransform(modElementalWidth,modMultishotHeight,0,moddedCritWidth,baseDamageDim*uparams['MultFactr'],modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                
+                rateFireAxis.setTransform(0,Math.min(rateModHeight,60),0,50/DPSRateScale,(1+MNRows)*rateModWidth,[0,0,-1],[0,1,0],0,viewAzimuth,viewAltitude,DPSRateScale);
+                
+                // shotDispBoxes['DPSWCrt'].setTransform(0,0,weaponCritDepth,weaponCritWidth,modMultishotHeight,weaponCritDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                // //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = 
+                
+                // shotDispBoxes['DPSMCrt'].setTransform(0,0,moddedCritDepth,moddedCritWidth,modMultishotHeight,moddedCritDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                // //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = 
+                
+                //rateDispWBox.setTransform(0,rateBaseHeight,0,rateBaseWidth,rateBaseHeight,rateBaseDepth,viewAzimuth,viewAltitude,DPSRateScale);
+                //rateDispBoxes['modb'].setTransform(0,rateModHeight,0,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateScale);
+                //rateDispBoxes['modb'].DOMBox.style.opacity = 1-Math.exp(-0.05*rateModWidth);
+                //console.log(rateModWidth,Math.exp(-0.08*rateModWidth),rateDispBoxes['modb'].DOMBox.style.opacity);
             }
             
         }
@@ -746,6 +904,11 @@ var visualizer=new function()
                         return;
                     }
                 }
+                else if (scrollingEnabled == 0 || (scrollingEnabled == -1 && params['MCycleTime']*1.5 < DPSTimeRange))
+                {
+                    animationID = null;
+                    return;
+                }
                 else
                 {
                     params['WTimeScroll'] = params['WTimeScroll'] + t;
@@ -780,7 +943,24 @@ var visualizer=new function()
         
         this.updateDPS = function(animate)
         {
+            var oldWFR = params['WepFR'];
+            var oldMFR = params['MRate'];
+            oldWFR = oldWFR == null? 1 : oldWFR;
+            oldMFR = oldMFR == null? 1 : oldMFR;
+            
             calculateDPS(params);
+            
+            //console.log('.');
+            //console.log(pParams['MTimeScroll'], params['MTimeScroll'], params['MCycleTime']);
+            pParams['WTimeScroll'] = pParams['WTimeScroll'] * oldWFR / params['WepFR'];
+            pParams['MTimeScroll'] = pParams['MTimeScroll'] * oldMFR / params['MRate'];
+            //console.log(pParams['MTimeScroll'], params['MTimeScroll'], params['MCycleTime']);
+            pParams['WTimeScroll'] = pParams['WTimeScroll'] % params['WCycleTime'];
+            pParams['MTimeScroll'] = pParams['MTimeScroll'] % params['MCycleTime'];
+            //console.log(pParams['MTimeScroll'], params['MTimeScroll'], params['MCycleTime']);
+            pParams['WTimeScroll'] = pParams['WTimeScroll'] > params['WMagTime'] ? pParams['WTimeScroll'] - params['WCycleTime'] : pParams['WTimeScroll'];
+            pParams['MTimeScroll'] = pParams['MTimeScroll'] > params['MMagTime'] ? pParams['MTimeScroll'] - params['MCycleTime'] : pParams['MTimeScroll'];
+            //console.log(pParams['MTimeScroll'], params['MTimeScroll'], params['MCycleTime']);
             if (scrollingEnabled == 0 || (scrollingEnabled == -1 && params['MCycleTime']*1.5 < DPSTimeRange))
             {
                 params['WTimeScroll'] = 0;
@@ -858,6 +1038,9 @@ var visualizer=new function()
         DOMDPSWDPSVal = DOMDPSDisp.querySelector('#WDPSVal'+idStr);
         DOMDPSMDPSVal = DOMDPSDisp.querySelector('#MDPSVal'+idStr);
         DOMDPSSDPSVal = DOMDPSDisp.querySelector('#SDPSVal'+idStr);
+        
+        DOMAnimateChangeButton = DOMDPSDisp.querySelector('#bForceAnimate'+idStr);
+        
         DOMDPSShotDispOrigin = this.DOMBuild.querySelector('#DPSShotDispOrigin'+idStr);
         
         DOMDPSRateDispOrigin = this.DOMBuild.querySelector('#DPSRateDispOrigin'+idStr);
@@ -870,6 +1053,10 @@ var visualizer=new function()
         shotDispBoxes['DPSMCrt'] = new box(idStr,'DPSMCrt','mcrtDisp', 4,true, DPSDispBaffleDist);
         shotDispBoxes['DPSCDmg'] = new box(idStr,'DPSCDmg','cdmgDisp', 2,true, 0);
         
+        rateTimeAxis = new axis(idStr,'DPSRateAxis','blackAxis',5000    ,4/DPSRateScale,0);
+        rateFireAxis = new axis(idStr,'DPSRateAxis','redAxis',  -5000   ,0,0);
+        rateFireAxis.setParent(DOMDPSRateDispOrigin);
+        rateTimeAxis.setParent(DOMDPSRateDispOrigin);
         //rateDispWBox = new box(idStr,'DPSMiniBase','cdmgDisp', 0,true, 5000);
         //rateDispBoxes['modb'] = new box(idStr,'DPSMiniBase','rateDisp',-1, 0);
         
@@ -887,6 +1074,23 @@ var visualizer=new function()
         }
         DOMWepForm.addEventListener('submit',function(submitEvent) {submitEvent.preventDefault(); thisBuild.verifyAllParamsAndCalculate.bind(thisBuild)();});
         DOMModForm.addEventListener('submit',function(submitEvent) {submitEvent.preventDefault(); thisBuild.verifyAllParamsAndCalculate.bind(thisBuild)();});
+        
+        DOMAnimateChangeButton.addEventListener('click',
+            function()
+            {
+                if (scrollingEnabled == -1)
+                {
+                    scrollingEnabled = 1;
+                    DOMAnimateChangeButton.style.color = 'red';
+                }
+                else
+                {
+                    scrollingEnabled = -1;
+                    DOMAnimateChangeButton.style.color = '';
+                }
+                thisBuild.updateDPS(true);
+            }
+        );
         
         params['WTimeScroll'] = 0;
         params['MTimeScroll'] = 0;
