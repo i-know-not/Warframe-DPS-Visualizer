@@ -35,14 +35,68 @@
 
             <h3 class="hPanel">Weapon</h3>
             <form class="panelForm" id="weaponForm_##">
-                <div class="dStatInput">
-                    <label class="lStatInput" for="iWeaponDamage">Weapon Damage</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponDamage_##" name="Weapon Damage" value="1000.000" />
+                <div class="dStatInput containerGridDamage">
+                    <div class="itemGridDamageColA">
+                        <label class="lStatInput itemGridDamageColA" for="iWeaponDamage">Damage</label>
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:1;">
+                        <span class="dt impact"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponImDamage_##" name="Weapon Damage" value="400.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:2;">
+                        <span class="dt puncture"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponPnDamage_##" name="Weapon Puncture Damage" value="400.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:3;">
+                        <span class="dt slash"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponSlDamage_##" name="Weapon Slash Damage" value="400.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:4;">
+                        <span class="dt cold"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponClDamage_##" name="Weapon Cold Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:5;">
+                        <span class="dt electricity"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponElDamage_##" name="Weapon Electricity Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:6;">
+                        <span class="dt heat"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponHtDamage_##" name="Weapon Heat Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:7;">
+                        <span class="dt toxin"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponTxDamage_##" name="Weapon Toxin Damage" value="0.000" />
+                    </div>
+                    
+                    <div class="itemGridDamageColA" style="grid-row:2;">
+                        <span class="dt blast"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponBlDamage_##" name="Weapon Blast Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:3;">
+                        <span class="dt corrosive"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponCrDamage_##" name="Weapon Corrosive Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:4;">
+                        <span class="dt gas"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponGsDamage_##" name="Weapon Gas Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:5;">
+                        <span class="dt magnetic"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponMgDamage_##" name="Weapon Magnetic Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:6;">
+                        <span class="dt radiation"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponRdDamage_##" name="Weapon Radiation Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:7;">
+                        <span class="dt viral"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponVrDamage_##" name="Weapon Viral Damage" value="0.000" />
+                    </div>
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iWeaponMultishot">Pellets</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponMultishot_##" name="Weapon Multishot" value="1.000" />
+                    <label class="lStatInput" for="iWeaponPellets">Pellets</label>
+                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponPellets_##" name="Weapon Pellets" value="8.000" />
                 </div>
 
                 <div class="dStatInput">
@@ -53,6 +107,11 @@
                 <div class="dStatInput">
                     <label class="lStatInput" for="iWeaponCD">Critical Damage</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iWeaponCD_##" name="Weapon Critical Damage" value="2.000" />
+                </div>
+                
+                <div class="dStatInput">
+                    <label class="lStatInput" for="iWeaponSC">Status Chance</label>
+                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponSC_##" name="Weapon Status Chance" value="15.000" />
                 </div>
 
                 <div class="dStatInput">
@@ -67,7 +126,7 @@
 
                 <div class="dStatInput">
                     <label class="lStatInput" for="iWeaponMag">Magazine</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponMag_##" name="Weapon Magazine" value="20.000" />
+                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponMag_##" name="Weapon Magazine" value="10.000" />
                 </div>
 
                 <div class="dStatInput">
@@ -87,9 +146,12 @@
                     <input class="iStatInput" type="tel" step="0.1" id="iModBaseDamage_##" name="Mod Base Damage" value="165.000" />
                 </div>
 
-                <div class="dStatInput">
-                    <label class="lStatInput" for="iModElementalDamage">Elemental Damage</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iModElementalDamage_##" name="Mod Elemental Damage" value="120.000" />
+                <div class="dStatInput containerGridDamageModType">
+                    <label class="lStatInput" for="iModElementalDamage">Type Damage</label>
+                    <div class="itemGridDamageColB" style="grid-row:1;">
+                        <!--<span class="dt cold"></span>-->
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModElementalDamage_##" name="Mod Elemental Damage" value="120.000" />
+                    </div>
                 </div>
 
                 <div class="dStatInput">
@@ -105,6 +167,11 @@
                 <div class="dStatInput">
                     <label class="lStatInput" for="iModCD">Critical Damage</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModCD_##" name="Mod Critical Damage" value="120.000" />
+                </div>
+                
+                <div class="dStatInput">
+                    <label class="lStatInput" for="iModSC">Status Chance</label>
+                    <input class="iStatInput" type="tel" step="0.1" id="iModSC_##" name="Mod Status Chance" value="120.000" />
                 </div>
 
                 <div class="dStatInput">
@@ -140,9 +207,13 @@
                 <div class="DPSValDisp" id="MDPSVal_##" style="z-index:10000; position:relative;">MDPS</div>
                 <div class="DPSValDisp" style="z-index:10000; position:relative;">Sustained DPS</div>
                 <div class="DPSValDisp" id="SDPSVal_##" style="z-index:10000; position:relative;">SDPS</div>
+                <div class="DPSValDisp" style="z-index:10000; position:relative;">Status/Shot</div>
+                <div class="DPSValDisp" id="MSttsVal_##" style="z-index:10000; position:relative;">SDPS</div>
                 <div class="DPSValDisp" style="z-index:10000; position:relative;"><input type="button" value="Force Animate" id="bForceAnimate_##"/></div>
                 <div class="dispOrigin DPSShotDispOrigin" id="DPSShotDispOrigin_##" style="z-index:100;"></div>
-                <div class="dispOrigin DPSRateDispOrigin" id="DPSRateDispOrigin_##" style="z-index:99;"></div>
+                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttsDispOrigin_##" style="z-index:99;"></div>
+                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttGraphOrigin_##" style="z-index:98;"></div>
+                <div class="dispOrigin DPSRateDispOrigin" id="DPSRateDispOrigin_##" style="z-index:97;"></div>
             </div>
 
         </div>

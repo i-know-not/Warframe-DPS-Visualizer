@@ -1,6 +1,7 @@
 body
 {
     padding:0;
+    margin:0;
     color:#505050;
     font-family:trebuchet ms,helvetica,sans-serif;
     font-size:16px;
@@ -51,10 +52,11 @@ h3.hPanel
 .build
 {
     display:inline-flex;
-    margin:0.5em;
+    margin:0 0.5em 0.5em 0.5em;
     border-radius:0.5em;
     overflow:hidden;
     border:1px solid #a8a8a8;
+    /*flex-direction:column;*/
     /*
     background-color:#a8a8a8;
     */
@@ -91,7 +93,7 @@ h3.hPanel
 
 .panel > *
 {
-    margin:0.5em;
+    margin:0.25em 0.5em 0.25em 0.5em;
 }
 
 .panelForm
@@ -123,9 +125,16 @@ h3.hPanel
 
 .DPSPanel
 {
-    min-width:40em;
-    width:40em;
+    min-width:80em;
+    width:80em;
 }
+
+/*
+.lStatInput
+{
+    color:black;
+}
+*/
 
 .dStatInput
 {
@@ -136,7 +145,8 @@ h3.hPanel
 .iStatInput
 {
     float:right;
-    width:4.5em;
+    /* width:4.5em; */
+    width:3.1em;
     padding:0;
     text-align:right;
     font-size:1em;
@@ -148,16 +158,32 @@ h3.hPanel
     */
     /*border:1px solid white;*/
     border:none;
+    outline:none;
     background-color:white;
     -moz-appearance:textfield;
 }
+
+/*
+.wepPanel .iStatInput
+{
+    width:3.1em !important;
+}
+*/
+
+.iStatInputElem
+{
+    float:none !important;
+}
+
 
 .iStatInput:hover,
 .iStatInput:focus
 {
     /*border:1px solid #a8a8a8;*/
+    outline:none;
     border:none;
-    box-shadow:0 0 0 1px #a8a8a8;
+    background-color:#f0f0f0;
+    /*box-shadow:0 0 0 1px #a8a8a8 inset;*/
 }
 
 .iStatInput::-webkit-inner-spin-button,
@@ -165,6 +191,120 @@ h3.hPanel
 {
     -webkit-appearance:none;
     margin:0;
+}
+
+.containerGridDamage
+{
+    display:grid;
+    /*grid-row-gap:0.5em;*/
+    grid-template-columns:auto auto;
+    grid-template-rows:auto auto auto auto auto auto auto;
+    justify-content:space-between;
+}
+
+.containerGridDamageModType
+{
+    display:grid;
+    /*grid-row-gap:0.5em;*/
+    grid-template-columns:auto auto;
+    grid-template-rows:auto auto auto auto;
+    justify-content:space-between;
+}
+
+.itemGridDamageColA
+{
+    grid-column:1;
+    text-align: left;
+}
+
+.itemGridDamageColB
+{
+    grid-column:2;
+    text-align: right;
+}
+
+.dt
+{
+    display:inline-block;
+    width:1em;
+    height:1em;
+    background-color:transparent;
+    background-size:contain;
+}
+
+.impact
+{
+    background-image:url("impact_b.png");
+}
+
+.puncture
+{
+    background-image:url("puncture_b.png");
+}
+
+.slash
+{
+    background-image:url("slash_b.png");
+}
+
+.cold
+{
+    background-image:url("cold_b.png");
+}
+
+.electricity
+{
+    background-image:url("electricity_b.png");
+}
+
+.heat
+{
+    background-image:url("heat_b.png");
+}
+
+.toxin
+{
+    background-image:url("toxin_b.png");
+}
+
+.blast
+{
+    background-image:url("blast_b.png");
+}
+
+.corrosive
+{
+    background-image:url("corrosive_b.png");
+}
+
+.gas
+{
+    background-image:url("gas_b.png");
+}
+
+.magnetic
+{
+    background-image:url("magnetic_b.png");
+}
+
+.radiation
+{
+    background-image:url("radiation_b.png");
+}
+
+.viral
+{
+    background-image:url("viral_b.png");
+}
+
+.void
+{
+    background-image:url("VoidTearIcon_b.png");
+}
+
+.true
+{
+    background-image:url("LotusBlack.png");
 }
 
 .statDisp > *
@@ -187,7 +327,7 @@ h3.hPanel
 .DPSDisp
 {
     position:relative;
-    width:39em;
+    /*width:39em;*/
     height:25em;
 }
 
@@ -207,15 +347,33 @@ h3.hPanel
 .DPSShotDispOrigin
 {
     /*transform:scale(0.2);*/
-    left:5%;
+    left:2em;
     top:20%;
+}
+
+.DPSSttsDispOrigin
+{
+    /*transform:scale(0.15);*/
+    left:2em;
+    top:60%;
 }
 
 .DPSRateDispOrigin
 {
     /*transform:scale(0.15);*/
-    left:5%;
-    top:50%;
+    left:70%;
+    top:90%;
+}
+
+.dispLabel
+{
+    position:absolute;
+    box-sizing:border-box;
+    top:0;
+    left:0;
+    /*height:1em;*/
+    transform-origin:0 0;
+    overflow:visible;
 }
 
 .dispAxis
@@ -303,6 +461,39 @@ h3.hPanel
 {
     background-color:transparent;
     border:1px dashed rgba(  0,  0,  0,0.5);
+}
+
+.sttsDisp
+{
+    background-color:rgba(255, 159, 127,0.5);
+    outline:1px solid black;
+    border:none;
+}
+
+.stslDisp
+{
+    background-color:transparent;
+    border:1px solid rgba(  0,  0,  0,0.2);
+}
+
+.sttsText
+{
+    white-space:nowrap;
+    color:black;
+    background-color:rgba(255, 255, 255,0.75);
+}
+
+.sttGraph
+{
+    padding:0;
+    margin:0;
+}
+
+.sttSVG
+{
+    width:24em;
+    height:4em;
+    border:1px solid black;
 }
 
 .rateDisp

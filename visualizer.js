@@ -3,6 +3,38 @@ var visualizer=new function()
     var DOMTemplate;
     var builds = [];
     var container;
+    var factorials = [1,1];
+    var colorScale = ["#ffffff", 
+        "#fdfcff", "#f9f9ff", "#f5f6ff", "#f1f3ff", "#ebf1ff", "#e5eeff", "#ddedff", "#d4ebff", "#caeaff", "#bfe9fd", 
+        "#b3e8f7", "#a7e8ef", "#9be7e4", "#91e7d8", "#88e6cb", "#81e4bd", "#7be3b0", "#78e1a4", "#75de98", "#74dc8e", 
+        "#73d984", "#73d67b", "#73d372", "#74d06a", "#75cd63", "#76ca5c", "#78c656", "#7ac350", "#7cbf4b", "#7ebc46", 
+        "#80b841", "#83b53d", "#85b139", "#87ad35", "#8aa932", "#8da52f", "#8fa12c", "#929d2a", "#959927", "#979525", 
+        "#9a9024", "#9d8c22", "#9f8721", "#a28321", "#a47e20", "#a77920", "#a97420", "#ab6f21", "#ad6a22", "#af6423", 
+        "#b05f25", "#b15a27", "#b25429", "#b24f2c", "#b24a2f", "#b14532", "#b04036", "#ae3b39", "#ac373d", "#a93340", 
+        "#a63043", "#a32d46", "#9f2a49", "#9c274b", "#98254d", "#93234f", "#8f2151", "#8b1f52", "#871e54", "#821c55", 
+        "#7e1b55", "#791a56", "#751856", "#701756", "#6b1756", "#671656", "#621555", "#5e1454", "#591353", "#551352", 
+        "#501251", "#4c124f", "#48114d", "#43104b", "#3f1049", "#3b0f47", "#370f44", "#330e42", "#2f0e3f", "#2b0d3c", 
+        "#270c38", "#240c35", "#200b32", "#1c0a2d", "#180929", "#140823", "#0f071c", "#0a0514", "#05030a", "#000000"
+    ];
+    
+    function factorial(n)
+    {
+        if (n in factorials)
+        {
+            return factorials[n];
+        }
+        
+        for (var i=factorials.length;i<=n;i++)
+        {
+            factorials.push(factorials[i-1]*i);
+        }
+        return(factorials[n]);
+    }
+    
+    function binCalc(p,n,k)
+    {
+        return factorial(n) / (factorial(k)*factorial(n-k)) * Math.pow(p,k) * Math.pow(1-p,n-k);
+    }
     
     function crossProd(u,v)
     {
@@ -10,6 +42,181 @@ var visualizer=new function()
                 u[2]*v[0] - u[0]*v[2],
                 u[0]*v[1] - u[1]*v[0]];
     }
+    
+    function binDistPlot(idStr)
+    {
+        var sizeX = 400;
+        var sizeY = 100;
+        var areaPlots = [];
+        var parentElement;
+        var currN = 0;
+        
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        // svg.className = 'sttGraph';
+        // svg.width = '100';
+        // svg.height = '100';
+        // svg.viewbox = '0 0 100 100';
+        // svg.preserveAspectRatio = 'none';
+        
+        svg.setAttribute('class', 'sttSVG');
+        svg.setAttribute('width', sizeX);
+        svg.setAttribute('height', sizeY);
+        svg.setAttribute('viewBox', '0 0 '+sizeX+' '+sizeY);
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+        
+        this.plot = function(n,pellets)
+        {
+            var accumProb = {};
+            var pVals = [];
+            var nPellets = Math.ceil(n);
+            var split = n + 1 - Math.ceil(n);
+            
+            if (n == currN)
+            {
+                return;
+            }
+            
+            currN = n;
+            
+            for (var p=0;p<0.99;p+=0.01)
+            {
+                pVals.push(p);
+                accumProb[p] = 0;
+            }
+            for (var p=0.99;p<=1;p+=0.0001)
+            {
+                pVals.push(p);
+                accumProb[p] = 0;
+            }
+            //console.log(accumProb);
+            
+            for (var i = 0; i < Math.max(areaPlots.length,nPellets+1); i++)
+            {
+                // var k = i+1;
+                var k = i;
+                
+                if (i >= nPellets+1)
+                {
+                    svg.removeChild(areaPlots.pop());
+                }
+                else
+                {
+                    if (i >= areaPlots.length)
+                    {
+                        i = areaPlots.push(document.createElementNS('http://www.w3.org/2000/svg', 'polygon'))-1;
+                        areaPlots[i].setAttribute('style', 'fill:'+'rgba(0,0,0,0.025)'+'; stroke:black; stroke-width:1;');
+                        svg.appendChild(areaPlots[i]);
+                    }
+                    
+                    //var accumProb = 0;
+                    var pointsStr = ' '+sizeX+','+sizeY+' 0,'+sizeY+' ';
+                    
+                    for (var ip in pVals)
+                    {
+                        var pAny = pVals[ip];
+                        var p = 1-Math.pow(1-pAny,1/pellets);
+                        //console.log(pellets,p);
+                        // pointsX.push(p*100);
+                        // pointsY.push(100-100*binCalc(p,n,k));
+                        var prob1 = binCalc(p,nPellets,k) * split;
+                        var prob2 = k < nPellets ? binCalc(p,nPellets-1,k) * (1-split) : 0;
+                        var prob = prob1 + prob2;
+                        accumProb[pAny] += prob;
+                        //console.log(p,n,k,accumProb[pAny])
+                        pointsStr = pointsStr + (pAny*sizeX) + ',' + (sizeY*accumProb[pAny]).toFixed(10) + ' ';
+                        //var teststr = ' ' + (p*200) + ',' + (100*accumProb[pAny]).toFixed(10) + ' ';
+                        //console.log(teststr);
+                    }
+                    //console.log('bp',pointsStr);
+                    areaPlots[i].setAttribute('points',pointsStr);
+                }
+            }
+        }
+        
+        this.setParent = function(node)
+        {
+            this.removeParent();
+            parentElement = node;
+            node.appendChild(svg);
+        }
+        
+        this.removeParent = function()
+        {
+            if (parentElement != null)
+            {
+                parentElement.removeChild(svg);
+                parentElement = null;
+            }
+        }
+    }
+    
+    function label(idStr, labelName, extraClasses, zIndex)
+    {
+        this.DOMLabel = document.createElement('div');
+        this.DOMLabel.className = 'dispOrigin';
+        this.DOMLabel.id = labelName+'Label'+idStr;
+        this.DOMLabel.style.zIndex = zIndex+100;
+        
+        this.DOMElement;
+        var field;
+        
+        field = document.createElement('div');
+        field.className = 'dispLabel ' + extraClasses;
+        this.DOMElement = field;
+        
+        var parentElement;
+        
+        this.DOMLabel.appendChild(field);
+        
+        this.setTransform = function(x,y,z,width,length,vector,normal,azimuth,altitude,scale)
+        {
+            var perspectiveT = '';
+            var azimuthMod = azimuth % Math.PI*2;
+            var i;
+            
+            //perspectiveT = "perspective(100em) ";
+            
+            var across = crossProd(normal,vector);
+            var matrixStr = 'matrix3d(' +
+                vector[0]   +','+   vector[1]   +','+   vector[2]   +',0,'+
+                across[0]   +','+   across[1]   +','+   across[2]   +',0,'+
+                normal[0]   +','+   normal[1]   +','+   normal[2]   +',0,'+
+                '0,0,0,1)';
+            
+            //field.style.width = length*scale+'em';
+            //field.style.height = width*scale+'em';
+            
+            field.style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) '+matrixStr;
+        }
+        
+        this.setParent = function(node)
+        {
+            this.removeParent();
+            parentElement = node;
+            node.appendChild(this.DOMLabel);
+        }
+        
+        this.removeParent = function()
+        {
+            if (parentElement != null)
+            {
+                parentElement.removeChild(this.DOMLabel);
+                parentElement = null;
+            }
+        }
+        
+        this.setZIndex = function(zIndex)
+        {
+            this.DOMLabel.style.zIndex = zIndex;
+        }
+        
+        this.setContents = function(contents)
+        {
+            field.innerHTML = contents;
+        }
+    }
+    
     
     function axis(idStr, axisName, extraClasses, zIndex, majInt, minInt)
     {
@@ -23,6 +230,7 @@ var visualizer=new function()
         var minTickTemplate;
         var majTicks = [];
         var minTicks = [];
+        var totalTickDist;
         
         line = document.createElement('div');
         line.className = 'dispAxis ' + extraClasses;
@@ -34,12 +242,23 @@ var visualizer=new function()
         
         this.DOMAxis.appendChild(line);
         
+        /*
+        for (var i in majInt)
+        {
+            
+        }
+        */
+        
         this.setTransform = function(x,y,z,width,length,vector,normal,phase,azimuth,altitude,scale)
         {
             var perspectiveT = '';
             var azimuthMod = azimuth % Math.PI*2;
             var phaseMod = phase % 1;
+            var i;
+            var accumTickDist;
             phaseMod = phaseMod < 1 ? phaseMod + 1 : phaseMod;
+            
+            //perspectiveT = "perspective(100em) ";
             
             var across = crossProd(normal,vector);
             var matrixStr = 'matrix3d(' +
@@ -54,12 +273,19 @@ var visualizer=new function()
             line.style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) '+matrixStr;
             
             
+            //if (majInt.length == 0)
             if (majInt == 0)
             {
                 return;
             }
             
+            
+            
             nMajTicks = Math.floor(length/majInt+1);
+            i = 0;
+            accumTickLength = 0;
+            
+            
             
             for (var i = majTicks.length-1; i >= nMajTicks && i >= 0; i--)
             {
@@ -85,7 +311,7 @@ var visualizer=new function()
                 
                 majTicks[i].style.width     = scale*width     + 'em';
                 majTicks[i].style.height    = scale*width     + 'em';
-                var xP = (i+phaseMod)*majInt;
+                var xP = (i+phaseMod-1)*majInt;
                 majTicks[i].style.transform = perspectiveT+'rotateX('+altitude+'rad) rotateY('+azimuth+'rad) translate3d('+(x+0     )*scale+'em,'+(y+0     )*scale+'em,'+(z+0     )*scale+'em) '+matrixStr+' translate3d('+xP*scale+'em,'+width*scale+'em,0)';
                 opacity = 1;
                 if (xP < 0)
@@ -477,16 +703,24 @@ var visualizer=new function()
         var DOMDPSDisp;
         var DOMDPSWShotVal;
         var DOMDPSMShotVal;
+        var DOMDPSMSttsVal;
         var DOMDPSWDPSVal;
         var DOMDPSMDPSVal;
         var DOMDPSSDPSVal;
         var DOMDPSShotDispOrigin;
-        
+        var DOMDPSSttsDispOrigin;
+        var DOMDPSSttGraphOrigin;
         var DOMDPSRateDispOrigin;
         
         var DOMAnimateChangeButton;
         
         var shotDispBoxes = [];
+        var moddedSttsDispLabel;
+        var moddedSttsDispBoxes = [];
+        var moddedSttsOutlBoxes = [];
+        var moddedSttGraphLabel;
+        var moddedSttGraphAxis;
+        var moddedSttGraphSVG;
         var moddedRateDispBoxes = [];
         var weaponRateDispBoxes = [];
         var rateTimeAxis;
@@ -497,8 +731,9 @@ var visualizer=new function()
         var viewAltitude = -Math.PI/6*0.5;
         var DPSShotScale = 0.2;
         //var DPSShotBorderScale = DPSShotScale*2;
-        
-        var DPSRateScale = 0.15;
+        var DPSSttsScale = 0.2;
+        //var DPSSttsBorderScale = DPSSttsScale*2;
+        var DPSRateScale = 0.2;
         //var DPSRateBorderScale = DPSRateScale/2;
         
         var DPSTimeRange = 5;
@@ -513,19 +748,22 @@ var visualizer=new function()
         this.verifyParamAndCalculate = function(eventParamName)
         {
             console.log(eventParamName);
+            this.verifyAllParamsAndCalculate();
+            /*
             iElement = DOMParams[eventParamName];
             var iValue = parseFloat(iElement.value);
+            var isWep = eventParamName.startsWith("iWeap");
             if (isNaN(iValue))
             {
-                iElement.value = params[eventParamName].toFixed(3);
+                iElement.value = params[eventParamName].toFixed(isWep ? 1 : 3);
             }
             else
             {
-                if (eventParamName.startsWith("Wep") && iValue < 0) {iValue = 0;}
+                if (isWep && iValue < 0) {iValue = 0;}
                 if (eventParamName.startsWith("Mod") && iValue < -100) {iValue = -100;}
                 if (eventParamName == "WepFR" && iValue < 1/60) {iValue = 1/60;}
                 if (eventParamName == "WepCons" && iValue < 1/60) {iValue = 1/60;}
-                iElement.value = iValue.toFixed(3);
+                iElement.value = iValue.toFixed(isWep ? 1 : 3);
                 
                 if (params[eventParamName] != iValue)
                 {
@@ -533,27 +771,41 @@ var visualizer=new function()
                     this.updateDPS(true);
                 }
             }
+            */
         }
         
         this.verifyAllParamsAndCalculate = function()
         {
             console.log("submit");
+            var modified = false;
+            
             for (var paramName in DOMParams)
             {
                 iElement = DOMParams[paramName];
                 var iValue = parseFloat(iElement.value);
+                var isWep = paramName.startsWith("Wep");
+                var isFR = paramName.startsWith("WepFR");
                 if (isNaN(iValue))
                 {
-                    iElement.value = params[paramName].toFixed(3);
+                    // iElement.value = params[paramName].toFixed(isWep ? 1 : 3);
+                    // iElement.value = params[paramName].toFixed(1);
+                    iElement.value = params[paramName].toFixed(isFR ? 3 : 1);
                 }
                 else
                 {
+                    if (isFR) iValue = Math.max(0.017,iValue);
+                    modified = modified | (params[paramName] != iValue);
                     params[paramName] = iValue;
-                    iElement.value = iValue.toFixed(3);
+                    // iElement.value = iValue.toFixed(isWep ? 1 : 3);
+                    // iElement.value = iValue.toFixed(1);
+                    iElement.value = iValue.toFixed(isFR ? 3 : 1);
                 }
             }
             
-            this.updateDPS(true);
+            if (modified)
+            {
+                this.updateDPS(true);
+            }
         }
         
         function calculateDPS(uparams)
@@ -570,15 +822,43 @@ var visualizer=new function()
             uparams['ElemFactr'] = 1+uparams['ElemBonus'];
             uparams['MultBonus'] = uparams['ModMultishot']/100;
             uparams['MultFactr'] = 1+uparams['MultBonus'];
+            uparams['ModPellets'] = uparams['WepPellets'] * uparams['MultFactr'];
             uparams['WCrtProbl'] = uparams['WepCC']/100;
             uparams['WCrtBonus'] = uparams['WepCD']-1;
             uparams['MCrtProbl'] = uparams['WCrtProbl'] * (1+uparams['ModCC']/100);
             uparams['MCrtBonus'] = uparams['WepCD']*(1+uparams['ModCD']/100)-1;
+            
+            uparams['StsCBonus'] = uparams['ModSC']/100;
+            uparams['StsCFactr'] = 1+uparams['StsCBonus'];
+            
             uparams['RateBonus'] = uparams['ModFR']/100;
             uparams['RateFactr'] = 1+uparams['RateBonus']
             
             uparams['MRate'] = Math.max(uparams['WepFR']*uparams['RateFactr'],1/60);
             uparams['RateFactr'] = uparams['MRate']/uparams['WepFR'];
+            
+            uparams['WepDamage'] = (
+                uparams['WepImDamage'  ] +
+                uparams['WepPnDamage'  ] +
+                uparams['WepSlDamage'  ] +
+                uparams['WepClDamage'  ] +
+                uparams['WepElDamage'  ] +
+                uparams['WepHtDamage'  ] +
+                uparams['WepTxDamage'  ] +
+                uparams['WepBlDamage'  ] +
+                uparams['WepCrDamage'  ] +
+                uparams['WepGsDamage'  ] +
+                uparams['WepMgDamage'  ] +
+                uparams['WepRdDamage'  ] +
+                uparams['WepVrDamage'  ]
+            );
+            
+            uparams['WShot'] = uparams['WepDamage'] * (1+uparams['WCrtProbl']*uparams['WCrtBonus']);
+            uparams['MShot'] = uparams['WepDamage'] * uparams['DmgeFactr'] * uparams['ElemFactr'] * uparams['MultFactr'] * (1+uparams['MCrtProbl']*uparams['MCrtBonus']);
+            uparams['RShot'] = uparams['WShot'] == 0 ? 0 : uparams['MShot'] / uparams['WShot'];
+            
+            uparams['WStsC'] = Math.min(uparams['WepSC']/100,1);
+            uparams['MStsC'] = Math.min(uparams['WStsC'] * uparams['StsCFactr'],1);
             
             uparams['WMagShots'] = Math.floor(uparams['WepMag']/uparams['WepCons']);
             //uparams['WMagShots'] = animated ? uparams['WepMag']/uparams['WepCons'] : Math.floor(uparams['WepMag']/uparams['WepCons']);
@@ -598,10 +878,6 @@ var visualizer=new function()
             uparams['MTimeScroll'] = uparams['MTimeScroll'] % uparams['MCycleTime'];
             uparams['MTimeScroll'] = uparams['MTimeScroll'] > uparams['MMagTime'] ? uparams['MTimeScroll'] - uparams['MCycleTime'] : uparams['MTimeScroll'];
             
-            uparams['WShot'] = uparams['WepDamage'] * (1+uparams['WCrtProbl']*uparams['WCrtBonus']);
-            uparams['MShot'] = uparams['WepDamage'] * uparams['DmgeFactr'] * uparams['ElemFactr'] * uparams['MultFactr'] * (1+uparams['MCrtProbl']*uparams['MCrtBonus']);
-            uparams['RShot'] = uparams['WShot'] == 0 ? 0 : uparams['MShot'] / uparams['WShot'];
-            
             uparams['WDPS'] = uparams['WepDamage'] * (1+uparams['WCrtProbl']*uparams['WCrtBonus']) * uparams['WepFR'];
             uparams['MDPS'] = uparams['WepDamage'] * uparams['DmgeFactr'] * uparams['ElemFactr'] * uparams['MultFactr'] * (1+uparams['MCrtProbl']*uparams['MCrtBonus']) * uparams['MRate'];
             uparams['SDPS'] = uparams['MDPS'] * uparams['MMagTime']/uparams['MCycleTime'];
@@ -620,18 +896,26 @@ var visualizer=new function()
             var moddedCritWidth;
             var moddedCritHeight;
             
+            var moddedStsCDispVal;
+            
             var rateBaseWidth;
             var rateBaseDepth;
             var rateBaseHeight;
             var rateModWidth;
-            var rateModDeph;
+            var rateModDepth;
             var rateModHeight;
+            
+            var WCrtBorderColor = 'black';
+            var MCrtBorderColor = 'black';
             
             //calculateDPS(uparams);
             
             var azimuthMod = viewAzimuth % Math.PI*2;
             
-            var RB = 1;
+            var MNBars = Math.ceil(uparams['ModPellets']);
+            var MPStsC = 1-Math.pow(1-uparams['MStsC'],1/uparams['WepPellets']);
+            
+            var RB = 1/8;
             var RS = uparams['RShot']
             
             var TDispStart = -1;
@@ -682,10 +966,10 @@ var visualizer=new function()
             rateBaseDepth = rateBaseHeight;
             
             //solve {x*y=z, (x-1)*r=(y-1)} for x,y
-            rateModHeight = (Math.pow(RB*RB + RB*(4*uparams['RShot'] - 2) + 1,1/2) + RB - 1)/(2*RB) * rateBaseHeight;
-            rateModDepth  = (Math.pow(RB*RB + RB*(4*uparams['RShot'] - 2) + 1,1/2) - RB + 1)/2;
-            rateModDepth = Math.pow(rateModDepth,1/2) * rateBaseHeight;
-            rateModWidth = rateModDepth;
+            rateModWidth = (Math.pow(RB*RB + RB*(4*uparams['RShot'] - 2) + 1,1/2) + RB - 1)/(2*RB) * rateBaseHeight;
+            rateModHeight  = (Math.pow(RB*RB + RB*(4*uparams['RShot'] - 2) + 1,1/2) - RB + 1)/2;
+            rateModHeight = Math.pow(rateModHeight,1/2) * rateBaseHeight;
+            rateModDepth = rateModHeight;
             
             
             /*
@@ -750,7 +1034,7 @@ var visualizer=new function()
             }
             */
             
-            var MNRows = Math.min(Math.ceil(rateModWidth/4*DPSRateScale*uparams['MRate']),MMagShots);
+            var MNRows = Math.min(Math.ceil(rateModHeight/4*DPSRateScale*uparams['MRate']),MMagShots);
             //var MNRows = Math.ceil(rateModWidth/4*DPSRateScale*uparams['MRate']);
             
             for (var i = moddedRateDispBoxes.length-1; i >= MNumShots && i >= 1; i--)
@@ -773,20 +1057,24 @@ var visualizer=new function()
                 shotNo = shotNo % MMagShots;
                 shotNo = shotNo < 0 ? shotNo + MMagShots : shotNo;
                 var rowNo = Math.round(shotNo % MNRows);
-                var xT = magNo * uparams['MCycleTime'] + shotNo / uparams['MRate'] - MTOffset;
-                var xP = xT*4/DPSRateScale;
+                var DT = magNo * uparams['MCycleTime'] + shotNo / uparams['MRate'] - MTOffset;
+                var DP = DT*4/DPSRateScale;
                 var opacity = 1-Math.exp(-0.05*Math.min(rateModWidth,rateModHeight));
                 var borderColor = 'black';
                 var sideColor = 'grey';
-                if (xT < 0)
+                if (DT < 0)
                 {
-                    sideColor = 'rgb(127,0,0)';
                     borderColor = 'transparent';
-                    opacity = Math.max(1+xT,0);
+                    opacity = Math.max(1+DT,0);
+                    sideColor = 'rgba(255,0,0,'+opacity+')';
                 }
-                else if (xT >= DPSTimeRange)
+                else 
                 {
-                    opacity *= Math.max(DPSTimeRange+1-xT,0);
+                    if (DT >= DPSTimeRange)
+                    {
+                        opacity *= Math.max(DPSTimeRange+1-DT,0);
+                    }
+                    sideColor = 'rgba(127,127,127,'+opacity+')';
                 }
                 
                 if (azimuthMod < Math.PI)
@@ -798,28 +1086,29 @@ var visualizer=new function()
                     moddedRateDispBoxes[i].DOMBox.style.zIndex = -xI + Math.floor(rowNo/MNRows*MNumShots);;
                 }
                 
-                if (xT < -1 || xT > DPSTimeRange + 1)
+                if (DT < -1 || DT > DPSTimeRange + 1)
                 {
                     //moddedRateDispBoxes[i].DOMBox.style.display = 'none';
                     moddedRateDispBoxes[i].DOMBox.style.visibility = 'hidden';
                 }
                 else
                 {
-                    moddedRateDispBoxes[i].setTransform(xP,rateModHeight,-rowNo*rateModDepth,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateScale);
+                    moddedRateDispBoxes[i].setTransform(-rateModWidth-Math.max(0,MNRows*rateModHeight*0.6-15/DPSRateScale),-DP,-rowNo*rateModDepth,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateScale);
                     moddedRateDispBoxes[i].setSideColor(sideColor);
                     moddedRateDispBoxes[i].setBorderColor(borderColor);
-                    moddedRateDispBoxes[i].DOMBox.style.opacity = opacity;
+                    //moddedRateDispBoxes[i].DOMBox.style.opacity = opacity;
                     //moddedRateDispBoxes[i].DOMBox.style.display = 'block';
                     moddedRateDispBoxes[i].DOMBox.style.visibility = 'visible';
                 }
             }
             
-            rateTimeAxis.setTransform(4*TDispStart/DPSRateScale,Math.min(rateModHeight,60),0,0.25/DPSRateScale,4*(TDispEnd-TDispStart+8)/DPSRateScale,[1,0,0],[0,0,1],-uparams['MTimeScroll'],viewAzimuth,viewAltitude,DPSRateScale);
+            rateTimeAxis.setTransform(-Math.max(0,MNRows*rateModHeight*0.6-15/DPSRateScale),-4*TDispStart/DPSRateScale,0,0.25/DPSRateScale,4*(TDispEnd-TDispStart+8)/DPSRateScale,[0,-1,0],[0,0,1],-uparams['MTimeScroll'],viewAzimuth,viewAltitude,DPSRateScale);
             
             if (!scrollOnly)
             {
                 DOMDPSWShotVal.innerHTML=uparams['WShot'].toFixed(3);
                 DOMDPSMShotVal.innerHTML=uparams['MShot'].toFixed(3);
+                DOMDPSMSttsVal.innerHTML=(1-Math.pow(1-uparams['MStsC'],1/uparams['WepPellets']))*uparams['ModPellets'];
                 DOMDPSWDPSVal.innerHTML=uparams['WDPS'].toFixed(3);
                 DOMDPSMDPSVal.innerHTML=uparams['MDPS'].toFixed(3);
                 DOMDPSSDPSVal.innerHTML=uparams['SDPS'].toFixed(3);
@@ -836,20 +1125,117 @@ var visualizer=new function()
                 //shotDispBoxes['DPSMult'].DOMBox.style.opacity = Math.abs(uparams['MultBonus']) > 0.1 ? 1 : Math.abs(uparams['MultBonus'])*10;
                 
                 shotDispBoxes['DPSWCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['WCrtProbl'],0,weaponCritWidth,weaponCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                if (uparams['WCrtProbl'] > 2) {WCrtBorderColor = 'darkred';}
+                else if (uparams['WCrtProbl'] > 1) {WCrtBorderColor = 'darkorange';}
+                shotDispBoxes['DPSWCrt'].setBorderColor(WCrtBorderColor)
                 //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = Math.abs(uparams['WCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['WCrtProbl'])*10;
                 
                 shotDispBoxes['DPSMCrt'].setTransform(modElementalWidth,modMultishotHeight*uparams['MCrtProbl'],0,moddedCritWidth,moddedCritHeight,modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
+                if (uparams['MCrtProbl'] > 2) {MCrtBorderColor = 'darkred';}
+                else if (uparams['MCrtProbl'] > 1) {MCrtBorderColor = 'darkorange';}
+                shotDispBoxes['DPSMCrt'].setBorderColor(MCrtBorderColor)
                 //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = Math.abs(uparams['MCrtProbl']) > 0.1 ? 1 : Math.abs(uparams['MCrtProbl'])*10;
                 
                 shotDispBoxes['DPSCDmg'].setTransform(modElementalWidth,modMultishotHeight,0,moddedCritWidth,baseDamageDim*uparams['MultFactr'],modMultishotDepth,viewAzimuth,viewAltitude,DPSShotScale);
                 
-                rateFireAxis.setTransform(0,Math.min(rateModHeight,60),0,50/DPSRateScale,(1+MNRows)*rateModWidth,[0,0,-1],[0,1,0],0,viewAzimuth,viewAltitude,DPSRateScale);
+                rateFireAxis.setTransform(-Math.max(0,MNRows*rateModHeight*0.6-15/DPSRateScale),0,2/DPSRateScale,50/DPSRateScale,(MNRows)*rateModHeight+4/DPSRateScale,[0,0,-1],[1,0,0],0,viewAzimuth,viewAltitude,DPSRateScale);
                 
                 // shotDispBoxes['DPSWCrt'].setTransform(0,0,weaponCritDepth,weaponCritWidth,modMultishotHeight,weaponCritDepth,viewAzimuth,viewAltitude,DPSShotScale);
                 // //shotDispBoxes['DPSWCrt'].DOMBox.style.opacity = 
                 
                 // shotDispBoxes['DPSMCrt'].setTransform(0,0,moddedCritDepth,moddedCritWidth,modMultishotHeight,moddedCritDepth,viewAzimuth,viewAltitude,DPSShotScale);
                 // //shotDispBoxes['DPSMCrt'].DOMBox.style.opacity = 
+                
+                var accumProb = 0;
+                var u = 0.5/DPSSttsScale;
+                var s = 8;
+                var split = uparams['ModPellets'] + 1 - MNBars;
+                
+                moddedSttGraphSVG.plot(uparams['ModPellets'],uparams['WepPellets']);
+                // moddedSttGraphLabel.setTransform(0,0,uparams['MStsC']*8*s*u,0,0,[0,0,-1],[1,0,0],viewAzimuth,viewAltitude,DPSSttsScale);
+                // moddedSttGraphAxis.setTransform(0,8*u,uparams['MStsC']*8*s*u,1,8*s*u+1,[0,0,-1],[1,0,0],0,viewAzimuth,viewAltitude,DPSSttsScale);
+                moddedSttGraphLabel.setTransform(0,0,0,0,0,[0,0,-1],[1,0,0],viewAzimuth,viewAltitude,DPSSttsScale);
+                moddedSttGraphAxis.setTransform(0,s*u,0,1,6*s*u+1,[0,0,-1],[1,0,0],0,viewAzimuth,viewAltitude,DPSSttsScale);
+                
+                for (var i = moddedSttsDispBoxes.length-1; i >= MNBars+1 && i >= 1; i--)
+                {
+                    moddedSttsDispBoxes.pop().removeParent();
+                    moddedSttsOutlBoxes.pop().removeParent();
+                }
+                
+                //console.log(split);
+                for (var i = 0; i < MNBars+1; i++)
+                {
+                    if (i >= moddedSttsDispBoxes.length)
+                    {
+                        i = moddedSttsDispBoxes.push(new box(idStr,'DPSSttsProbBar','sttsDisp',-1,false, 0))-1;
+                        moddedSttsOutlBoxes.push(new box(idStr,'DPSSttsProbBar','stslDisp',1000,false, 0));
+                        moddedSttsDispBoxes[i].setParent(DOMDPSSttsDispOrigin);
+                        moddedSttsOutlBoxes[i].setParent(DOMDPSSttsDispOrigin);
+                    }
+                    
+                    moddedSttsDispBoxes[i].DOMBox.style.zIndex = MNBars - i;
+                    moddedSttsOutlBoxes[i].DOMBox.style.zIndex = 1000 + i;
+                    
+                    var prob1 = binCalc(MPStsC,MNBars,i) * split;
+                    var prob2 = i < MNBars ? binCalc(MPStsC,MNBars-1,i) * (1-split) : 0;
+                    var prob = prob1+prob2;
+                    accumProb += prob;
+                    //console.log(i,MPStsC,MNBars,binCalc(MPStsC,MNBars,i),binCalc(MPStsC,MNBars-1,i),prob1,prob2);
+                    
+                    if (i == 0)
+                    {
+                        moddedSttsDispBoxes[i].DOMBox.style.visibility = 'hidden';
+                        // moddedSttsOutlBoxes[i].DOMBox.style.visibility = 'hidden';
+                        moddedSttsOutlBoxes[i].setTransform(0,s*accumProb*u,-uparams['MStsC']*6*s*u,MNBars*u,0.01,0.01,viewAzimuth,viewAltitude,DPSSttsScale);
+                        moddedSttsDispLabel.setTransform(4,(s*accumProb-2.6)*u,-uparams['MStsC']*6*s*u,0,0,[1,0,0],[0,0,1],viewAzimuth,viewAltitude,DPSSttsScale);
+                        // var decPlaces = Math.max(MNBars*0.5,Math.ceil(-Math.log10(prob)));
+                        var decPlaces = Math.ceil(-Math.log10(prob));
+                        decPlaces = prob == 0 ? 0 : Math.min(Math.max(1,decPlaces),14)
+                        // var moddedStsCDispVal = (100-prob*100).toFixed(Math.min(Math.max(4,decPlaces),14));
+                        var moddedStsCDispVal = (100-prob*100).toFixed(decPlaces);
+                        if (prob != 0)
+                        {
+                            if (moddedStsCDispVal.startsWith('100'))
+                            {
+                                moddedStsCDispVal = '099.99999999999999'
+                            }
+                            else
+                            {
+                                moddedStsCDispVal = '0' + moddedStsCDispVal
+                            }
+                        }
+                        moddedSttsDispLabel.setContents('Arsenal ~ '+moddedStsCDispVal+'%');
+                    }
+                    else
+                    {
+                        moddedSttsDispBoxes[i].setTransform(0,s*accumProb*u,-uparams['MStsC']*6*s*u,i*u,s*prob*u,0.01,viewAzimuth,viewAltitude,DPSSttsScale);
+                        moddedSttsOutlBoxes[i].setTransform(0+(i-1)*u,s*u,-uparams['MStsC']*6*s*u,u,(i<MNBars?1:split)*s*u,0.01,viewAzimuth,viewAltitude,DPSSttsScale);
+                    }
+                    //moddedSttsDispBoxes[i].DOMBox.style.opacity = Math.min(1,prob*100);
+                    //moddedSttsDispBoxes[i].setSideColor(colorScale[i]);
+                    
+                    /*
+                    if (i <= Math.round(MNBars - uparams['WepPellets']))
+                    {
+                        moddedSttsDispBoxes[i].setSideColor('rgba(0  ,111,223,1)');
+                    }
+                    else
+                    {
+                        moddedSttsDispBoxes[i].setSideColor('');
+                    }
+                    */
+                    
+                    if (i > Math.round(uparams['WepPellets']))
+                    {
+                        moddedSttsOutlBoxes[i].setBorderColor('rgba(0  ,111,223,0.3)');
+                    }
+                    else
+                    {
+                        moddedSttsOutlBoxes[i].setBorderColor('');
+                    }
+                }
+                //console.log(accumProb);
                 
                 //rateDispWBox.setTransform(0,rateBaseHeight,0,rateBaseWidth,rateBaseHeight,rateBaseDepth,viewAzimuth,viewAltitude,DPSRateScale);
                 //rateDispBoxes['modb'].setTransform(0,rateModHeight,0,rateModWidth,rateModHeight,rateModDepth,viewAzimuth,viewAltitude,DPSRateScale);
@@ -972,7 +1358,7 @@ var visualizer=new function()
                 showDPS(params,false);
                 return;
             }
-            console.log(animationID);
+            //console.log(animationID);
             if (animationID)
             {
                 window.cancelAnimationFrame(animationID);
@@ -1010,10 +1396,23 @@ var visualizer=new function()
         DOMIDDisp = this.DOMBuild.querySelector('#IDDisp'+idStr);
         DOMIDDisp.innerHTML = id.toString();
         
-        DOMParams['WepDamage'    ] = this.DOMBuild.querySelector('#iWeaponDamage'      +idStr);
-        DOMParams['WepMultishot' ] = this.DOMBuild.querySelector('#iWeaponMultishot'   +idStr);
+        DOMParams['WepImDamage'  ] = this.DOMBuild.querySelector('#iWeaponImDamage'    +idStr);
+        DOMParams['WepPnDamage'  ] = this.DOMBuild.querySelector('#iWeaponPnDamage'    +idStr);
+        DOMParams['WepSlDamage'  ] = this.DOMBuild.querySelector('#iWeaponSlDamage'    +idStr);
+        DOMParams['WepClDamage'  ] = this.DOMBuild.querySelector('#iWeaponClDamage'    +idStr);
+        DOMParams['WepElDamage'  ] = this.DOMBuild.querySelector('#iWeaponElDamage'    +idStr);
+        DOMParams['WepHtDamage'  ] = this.DOMBuild.querySelector('#iWeaponHtDamage'    +idStr);
+        DOMParams['WepTxDamage'  ] = this.DOMBuild.querySelector('#iWeaponTxDamage'    +idStr);
+        DOMParams['WepBlDamage'  ] = this.DOMBuild.querySelector('#iWeaponBlDamage'    +idStr);
+        DOMParams['WepCrDamage'  ] = this.DOMBuild.querySelector('#iWeaponCrDamage'    +idStr);
+        DOMParams['WepGsDamage'  ] = this.DOMBuild.querySelector('#iWeaponGsDamage'    +idStr);
+        DOMParams['WepMgDamage'  ] = this.DOMBuild.querySelector('#iWeaponMgDamage'    +idStr);
+        DOMParams['WepRdDamage'  ] = this.DOMBuild.querySelector('#iWeaponRdDamage'    +idStr);
+        DOMParams['WepVrDamage'  ] = this.DOMBuild.querySelector('#iWeaponVrDamage'    +idStr);
+        DOMParams['WepPellets'   ] = this.DOMBuild.querySelector('#iWeaponPellets'     +idStr);
         DOMParams['WepCC'        ] = this.DOMBuild.querySelector('#iWeaponCC'          +idStr);
         DOMParams['WepCD'        ] = this.DOMBuild.querySelector('#iWeaponCD'          +idStr);
+        DOMParams['WepSC'        ] = this.DOMBuild.querySelector('#iWeaponSC'          +idStr);
         DOMParams['WepFR'        ] = this.DOMBuild.querySelector('#iWeaponFR'          +idStr);
         DOMParams['WepCons'      ] = this.DOMBuild.querySelector('#iWeaponCons'        +idStr);
         DOMParams['WepMag'       ] = this.DOMBuild.querySelector('#iWeaponMag'         +idStr);
@@ -1022,8 +1421,9 @@ var visualizer=new function()
         DOMParams['ModDamage'    ] = this.DOMBuild.querySelector('#iModBaseDamage'     +idStr);
         DOMParams['ModElemental' ] = this.DOMBuild.querySelector('#iModElementalDamage'+idStr);
         DOMParams['ModMultishot' ] = this.DOMBuild.querySelector('#iModMultishot'      +idStr);
-        DOMParams['ModCD'        ] = this.DOMBuild.querySelector('#iModCD'             +idStr);
         DOMParams['ModCC'        ] = this.DOMBuild.querySelector('#iModCC'             +idStr);
+        DOMParams['ModCD'        ] = this.DOMBuild.querySelector('#iModCD'             +idStr);
+        DOMParams['ModSC'        ] = this.DOMBuild.querySelector('#iModSC'             +idStr);
         DOMParams['ModFR'        ] = this.DOMBuild.querySelector('#iModFR'             +idStr);
         DOMParams['ModMag'       ] = this.DOMBuild.querySelector('#iModMag'            +idStr);
         DOMParams['ModReload'    ] = this.DOMBuild.querySelector('#iModReload'         +idStr);
@@ -1035,6 +1435,7 @@ var visualizer=new function()
         DOMDPSDisp = this.DOMBuild.querySelector('#dpsDisp'+idStr);
         DOMDPSWShotVal = DOMDPSDisp.querySelector('#WShotVal'+idStr);
         DOMDPSMShotVal = DOMDPSDisp.querySelector('#MShotVal'+idStr);
+        DOMDPSMSttsVal = DOMDPSDisp.querySelector('#MSttsVal'+idStr);
         DOMDPSWDPSVal = DOMDPSDisp.querySelector('#WDPSVal'+idStr);
         DOMDPSMDPSVal = DOMDPSDisp.querySelector('#MDPSVal'+idStr);
         DOMDPSSDPSVal = DOMDPSDisp.querySelector('#SDPSVal'+idStr);
@@ -1042,7 +1443,8 @@ var visualizer=new function()
         DOMAnimateChangeButton = DOMDPSDisp.querySelector('#bForceAnimate'+idStr);
         
         DOMDPSShotDispOrigin = this.DOMBuild.querySelector('#DPSShotDispOrigin'+idStr);
-        
+        DOMDPSSttsDispOrigin = this.DOMBuild.querySelector('#DPSSttsDispOrigin'+idStr);
+        DOMDPSSttGraphOrigin = this.DOMBuild.querySelector('#DPSSttGraphOrigin'+idStr);
         DOMDPSRateDispOrigin = this.DOMBuild.querySelector('#DPSRateDispOrigin'+idStr);
         
         shotDispBoxes['DPSBase'] = new box(idStr,'DPSBase','baseDisp', 0,true, DPSDispBaffleDist);
@@ -1053,12 +1455,27 @@ var visualizer=new function()
         shotDispBoxes['DPSMCrt'] = new box(idStr,'DPSMCrt','mcrtDisp', 4,true, DPSDispBaffleDist);
         shotDispBoxes['DPSCDmg'] = new box(idStr,'DPSCDmg','cdmgDisp', 2,true, 0);
         
-        rateTimeAxis = new axis(idStr,'DPSRateAxis','blackAxis',5000    ,4/DPSRateScale,0);
-        rateFireAxis = new axis(idStr,'DPSRateAxis','redAxis',  -5000   ,0,0);
-        rateFireAxis.setParent(DOMDPSRateDispOrigin);
+        rateTimeAxis = new axis(idStr,'DPSRateAxis','blackAxis',5001    ,4/DPSRateScale,0);
         rateTimeAxis.setParent(DOMDPSRateDispOrigin);
+        
+        rateFireAxis = new axis(idStr,'DPSFireAxis','redAxis',  5000    ,0,0);
+        rateFireAxis.setParent(DOMDPSRateDispOrigin);
         //rateDispWBox = new box(idStr,'DPSMiniBase','cdmgDisp', 0,true, 5000);
         //rateDispBoxes['modb'] = new box(idStr,'DPSMiniBase','rateDisp',-1, 0);
+        
+        moddedSttsDispLabel = new label(idStr,'DPSSttsText', 'sttsText', 1000);
+        moddedSttsDispLabel.setParent(DOMDPSSttsDispOrigin);
+        
+        moddedSttGraphLabel = new label(idStr,'DPSSttGraph', 'sttGraph', 1000);
+        moddedSttGraphLabel.setParent(DOMDPSSttGraphOrigin);
+        moddedSttGraphLabel.setTransform(0,0,0,0,0,[0,0,-1],[1,0,0],viewAzimuth,viewAltitude,DPSSttsScale)
+        
+        moddedSttGraphAxis = new axis(idStr,'DPSSttGraphAxis','blackAxis',0,24*0.1/DPSSttsScale,1001);
+        moddedSttGraphAxis.setParent(DOMDPSSttGraphOrigin);
+        
+        moddedSttGraphSVG = new binDistPlot();
+        moddedSttGraphSVG.plot(1,1);
+        moddedSttGraphSVG.setParent(moddedSttGraphLabel.DOMElement);
         
         for (var dispItem in shotDispBoxes)
         {
@@ -1104,9 +1521,10 @@ var visualizer=new function()
             vParams[paramName] = 0;
         }
         
-        this.updateDPS(true);
+        this.verifyAllParamsAndCalculate();
+        //this.updateDPS(true);
         
-        this.DOMBuild.style.display='inline-flex';
+        this.DOMBuild.style.display='';//'inline-flex';
     }
     
     this.initialize=function()
@@ -1114,7 +1532,7 @@ var visualizer=new function()
         var templateContainer = document.getElementById('templateContainer');
         container = document.getElementById('container');
         DOMTemplate = document.getElementById('build_##');
-        templateContainer.removeChild(DOMTemplate);
+        //templateContainer.removeChild(DOMTemplate);
         
         builds.push(new build(0));
         container.appendChild(builds[0].DOMBuild);
