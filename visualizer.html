@@ -36,12 +36,10 @@
             <h3 class="hPanel">Weapon</h3>
             <form class="panelForm" id="weaponForm_##">
                 <div class="dStatInput containerGridDamage">
-                    <div class="itemGridDamageColA">
-                        <label class="lStatInput itemGridDamageColA" for="iWeaponDamage">Damage</label>
-                    </div>
+                    <label class="lStatInput" for="iWeaponDamage">Damage</label>
                     <div class="itemGridDamageColB" style="grid-row:1;">
                         <span class="dt impact"></span>
-                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponImDamage_##" name="Weapon Damage" value="400.000" />
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponImDamage_##" name="Weapon Impact Damage" value="400.000" />
                     </div>
                     <div class="itemGridDamageColB" style="grid-row:2;">
                         <span class="dt puncture"></span>
@@ -92,6 +90,14 @@
                         <span class="dt viral"></span>
                         <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponVrDamage_##" name="Weapon Viral Damage" value="0.000" />
                     </div>
+                    <div class="itemGridDamageColA" style="grid-row:8;">
+                        <span class="dt void"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponVdDamage_##" name="Weapon Void Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:8;">
+                        <span class="dt absolute"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iWeaponAbDamage_##" name="Weapon Absolute Damage" value="0.000" />
+                    </div>
                 </div>
 
                 <div class="dStatInput">
@@ -111,12 +117,12 @@
                 
                 <div class="dStatInput">
                     <label class="lStatInput" for="iWeaponSC">Status Chance</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponSC_##" name="Weapon Status Chance" value="15.000" />
+                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponSC_##" name="Weapon Status Chance" value="25.000" />
                 </div>
 
                 <div class="dStatInput">
                     <label class="lStatInput" for="iWeaponFR">Fire Rate</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponFR_##" name="Weapon Fire Rate" value="5.000" />
+                    <input class="iStatInput" type="tel" step="0.1" id="iWeaponFR_##" name="Weapon Fire Rate" value="0.800" />
                 </div>
 
                 <div class="dStatInput">
@@ -142,50 +148,112 @@
             <h3 class="hPanel">Mods</h3>
             <form class="panelForm" id="modForm_##">
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModBaseDamage">Base Damage</label>
+                    <label class="lStatInput" for="iModBaseDamage">%Base Damage</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModBaseDamage_##" name="Mod Base Damage" value="165.000" />
                 </div>
 
+                <div class="dStatInput">
+                    <label class="lStatInput" for="iModMultishot">%Multishot</label>
+                    <input class="iStatInput" type="tel" step="0.1" id="iModMultishot_##" name="Mod Multishot" value="90.000" />
+                </div>
+
                 <div class="dStatInput containerGridDamageModType">
-                    <label class="lStatInput" for="iModElementalDamage">Type Damage</label>
+                    <label class="lStatInput" for="iModElementalDamage">%Elemental</label>
                     <div class="itemGridDamageColB" style="grid-row:1;">
-                        <!--<span class="dt cold"></span>-->
-                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModElementalDamage_##" name="Mod Elemental Damage" value="120.000" />
+                        <span class="dt impact"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModImDamage_##" name="Mod Impact Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:2;">
+                        <span class="dt puncture"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModPnDamage_##" name="Mod Puncture Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:3;">
+                        <span class="dt slash"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModSlDamage_##" name="Mod Slash Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:4;">
+                        <span class="dt cold"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModClDamage_##" name="Mod Cold Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:5;">
+                        <span class="dt electricity"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModElDamage_##" name="Mod Electricity Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:6;">
+                        <span class="dt heat"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModHtDamage_##" name="Mod Heat Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:7;">
+                        <span class="dt toxin"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModTxDamage_##" name="Mod Toxin Damage" value="0.000" />
+                    </div>
+                    
+                    <div class="itemGridDamageColA" style="grid-row:2;">
+                        <span class="dt blast"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModBlDamage_##" name="Mod Blast Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:3;">
+                        <span class="dt corrosive"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModCrDamage_##" name="Mod Corrosive Damage" value="120.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:4;">
+                        <span class="dt gas"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModGsDamage_##" name="Mod Gas Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:5;">
+                        <span class="dt magnetic"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModMgDamage_##" name="Mod Magnetic Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:6;">
+                        <span class="dt radiation"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModRdDamage_##" name="Mod Radiation Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:7;">
+                        <span class="dt viral"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModVrDamage_##" name="Mod Viral Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColA" style="grid-row:8;">
+                        <span class="dt void"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModVdDamage_##" name="Mod Void Damage" value="0.000" />
+                    </div>
+                    <div class="itemGridDamageColB" style="grid-row:8;">
+                        <span class="dt absolute"></span>
+                        <input class="iStatInput iStatInputElem" type="tel" step="0.1" id="iModAbDamage_##" name="Mod Absolute Damage" value="0.000" />
                     </div>
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModMultishot">Multishot</label>
-                    <input class="iStatInput" type="tel" step="0.1" id="iModMultishot_##" name="Mod Multishot" value="90.000" />
-                </div>
-
-                <div class="dStatInput">
-                    <label class="lStatInput" for="iModCC">Critical Chance %</label>
+                    <label class="lStatInput" for="iModCC">%Critical Chance</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModCC_##" name="Mod Critical Chance" value="150.000" />
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModCD">Critical Damage</label>
+                    <label class="lStatInput" for="iModCD">%Critical Damage</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModCD_##" name="Mod Critical Damage" value="120.000" />
                 </div>
                 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModSC">Status Chance</label>
+                    <label class="lStatInput" for="iModSC">%Status Chance</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModSC_##" name="Mod Status Chance" value="120.000" />
+                </div>
+                
+                <div class="dStatInput">
+                    <label class="lStatInput" for="iModSD">%Status Duration</label>
+                    <input class="iStatInput" type="tel" step="0.1" id="iModSD_##" name="Mod Status Duration" value="0.000" />
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModFR">Fire Rate</label>
+                    <label class="lStatInput" for="iModFR">%Fire Rate</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModFR_##" name="Mod Fire Rate" value="0.000" />
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModMagazine">Magazine Size</label>
+                    <label class="lStatInput" for="iModMagazine">%Magazine Size</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModMag_##" name="Mod Magazine Size" value="0.000" />
                 </div>
 
                 <div class="dStatInput">
-                    <label class="lStatInput" for="iModReload">Reload Speed</label>
+                    <label class="lStatInput" for="iModReload">%Reload Speed</label>
                     <input class="iStatInput" type="tel" step="0.1" id="iModReload_##" name="Mod Reload Speed" value="55.000" />
                 </div>
                 <button class="submitButton" type="submit"></button>
@@ -193,37 +261,126 @@
         </div>
         
         
-        <div class="DPSPanel panel">
-            <h3 class="hPanel">DPS</h3>
-            <div class="DPSDisp statDisp" id="dpsDisp_##">
+        <div class="DPSPanel panel" id="dpsDisp_##">
+            <h3 class="hPanel">Output</h3>
+            <div class="DPSDisp statDisp">
                 <div class="dispFade"></div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Weapon Damage</div>
-                <div class="DPSValDisp" id="WShotVal_##" style="z-index:10000; position:relative;">WShot</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Modded Damage</div>
-                <div class="DPSValDisp" id="MShotVal_##" style="z-index:10000; position:relative;">MShot</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Weapon DPS</div>
-                <div class="DPSValDisp" id="WDPSVal_##" style="z-index:10000; position:relative;">WDPS</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Modded DPS</div>
-                <div class="DPSValDisp" id="MDPSVal_##" style="z-index:10000; position:relative;">MDPS</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Sustained DPS</div>
-                <div class="DPSValDisp" id="SDPSVal_##" style="z-index:10000; position:relative;">SDPS</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;">Status/Shot</div>
-                <div class="DPSValDisp" id="MSttsVal_##" style="z-index:10000; position:relative;">SDPS</div>
-                <div class="DPSValDisp" style="z-index:10000; position:relative;"><input type="button" value="Force Animate" id="bForceAnimate_##"/></div>
+                <div class="DPSValDisp containerGridDPSType" style="z-index:10000; top:0.5em; right:42em; display:grid;">
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Direct Damage</div>
+                    <div class="DPSValDisp itemGridDPSColB"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Original</div>
+                    <div class="DPSValDisp itemGridDPSColC"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Ratio</div>
+                    <div class="DPSValDisp itemGridDPSColD"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Modded</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:2; text-align:right; color:rgb(159, 31, 31);">Base Damage</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WDmgeVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">WDmge</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RDmgeVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">RDmge</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MDmgeVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">MDmge</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:3; text-align:right; color:rgb( 47,127, 47);">Elemental</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WElemVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">1.000</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RElemVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">RElem</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MElemVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">MElem</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:4; text-align:right; color:rgb(  0,111,223);">Multishot</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WMultVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">1.000</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RMultVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">RMult</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MMultVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">MMult</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:5; text-align:right; color:rgb(127,127, 64);">Crit</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WCritVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">WCrit</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RCritVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">RCrit</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MCritVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">MCrit</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:6; text-align:right; font-weight:bold;">Damage/Shot</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WShotVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">WShot</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RShotVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">RShot</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MShotVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">MShot</div>
+                </div>
+                
+                <div class="DPSValDisp containerGridDPSType" style="z-index:10000; top:8.5em; right:42em; display:grid;">
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Status Chance</div>
+                    <div class="DPSValDisp itemGridDPSColB"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Original</div>
+                    <div class="DPSValDisp itemGridDPSColC"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Ratio</div>
+                    <div class="DPSValDisp itemGridDPSColD"                     style="z-index:10000; position:relative; grid-row:1; text-align:right; font-weight:bold;">Modded</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:2; text-align:right; margin-bottom:0.25em;">Base Status</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WStsCVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">WStsC</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RStsCVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">RStsC</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MStsCVal_##"    style="z-index:10000; position:relative; grid-row:2; text-align:right;">MStsC</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:3; text-align:right; color:rgb(255,159,127);">Status/Pellet</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WStsPVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">WStsP</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RStsPVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">RStsP</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MStsPVal_##"    style="z-index:10000; position:relative; grid-row:3; text-align:right;">MStsP</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:4; text-align:right; color:rgb(  0,111,223);">Pellets</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WStsMVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">WStsM</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RStsMVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">RStsM</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MStsMVal_##"    style="z-index:10000; position:relative; grid-row:4; text-align:right;">MStsM</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:5; text-align:right; font-weight:bold; margin-bottom:0.25em;">Status/Shot</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WSttsVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">WStts</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RSttsVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">RStts</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MSttsVal_##"    style="z-index:10000; position:relative; grid-row:5; text-align:right;">MStts</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:6; text-align:right; font-weight:bold;">At least one</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WStsOVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">WStsO</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RStsOVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">RStsO</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MStsOVal_##"    style="z-index:10000; position:relative; grid-row:6; text-align:right;">MStsO</div>
+                    <div class="DPSValDisp itemGridDPSColA"                     style="z-index:10000; position:relative; grid-row:7; text-align:right; font-weight:bold;">Arsenal</div>
+                    <div class="DPSValDisp itemGridDPSColB" id="WStsAVal_##"    style="z-index:10000; position:relative; grid-row:7; text-align:right;">WStsA</div>
+                    <div class="DPSValDisp itemGridDPSColC" id="RStsAVal_##"    style="z-index:10000; position:relative; grid-row:7; text-align:right;">RStsA</div>
+                    <div class="DPSValDisp itemGridDPSColD" id="MStsAVal_##"    style="z-index:10000; position:relative; grid-row:7; text-align:right;">MStsA</div>
+                </div>
+                
+                <div class="DPSValDisp"                     style="z-index:10000; position:relative; text-align:right;"><input type="button" value="Force Animate" id="bForceAnimate_##"/></div>
+                
                 <div class="dispOrigin DPSShotDispOrigin" id="DPSShotDispOrigin_##" style="z-index:100;"></div>
-                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttsDispOrigin_##" style="z-index:99;"></div>
-                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttGraphOrigin_##" style="z-index:98;"></div>
-                <div class="dispOrigin DPSRateDispOrigin" id="DPSRateDispOrigin_##" style="z-index:97;"></div>
+                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttGraphOrigin_##" style="z-index:99;"></div>
+                <div class="dispOrigin DPSSttsDispOrigin" id="DPSSttsDispOrigin_##" style="z-index:98;"></div>
+                <div class="dispOrigin DPSSttsDispOrigin" id="DPSStEfDispOrigin_##" style="z-index:97;"></div>
+                <div class="dispOrigin DPSRateDispOrigin" id="DPSRateDispOrigin_##" style="z-index:96;"></div>
             </div>
-
+            <div style="z-index:10011; position:relative; top:0; right:0; bottom:0; left:0; overflow:visible;">
+                <div class="DPSBarDisp" id="DPSBarDisp_##"  style="z-index:10000;"></div>
+                <div class="hline"                          style="z-index:10100; bottom:04.25em; left:-29.25em;  right:0;"></div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:03.00em; left:-28.75em;  width:05.00em; font-weight:bold;">Total DPS</div>
+                <div class="DPSBar" id="WDPSBar_##"  style="z-index:10011; bottom:1.75em; background-color:gray;"></div>
+                <div class="DPSBar" id="MDPSBar_##"  style="z-index:10010; bottom:1.75em; background-color:lightcoral;"></div>
+                <div class="DPSBar" id="WSDPSBar_##" style="z-index:10011; bottom:0.25em; background-color:gray;"></div>
+                <div class="DPSBar" id="MSDPSBar_##" style="z-index:10010; bottom:0.25em; background-color:lightcoral;"></div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:01.75em; right:15.50em;  width:05.00em; font-weight:bold; text-align:right; direction:rtl;">Burst</div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:00.25em; right:15.50em;  width:05.00em; font-weight:bold; text-align:right; direction:rtl;">Sustained</div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:03.00em; right:10.50em;  width:10.00em; text-align:right; font-weight:bold;">
+                    <span class="DPSBar" style="display:inline-block; position:relative; left:0; width:0.5em; height:0.5em; background-color:gray; opacity:1;"></span> Unmodded
+                </div>
+                <div class="vline"                          style="z-index:10100; bottom:00.25em; right:10.25em; height:3.75em;"></div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:03.00em; right:06.00em;  width:10.00em; text-align:right; font-weight:bold;">
+                    Ratio
+                </div>
+                <div class="vline"                          style="z-index:10100; bottom:00.25em; right:05.75em; height:03.75em;"></div>
+                <div class="DPSValDisp"                     style="z-index:10100; bottom:03.00em; right:00.50em;  width:10.00em; text-align:right; font-weight:bold;">
+                    <span class="DPSBar" style="display:inline-block; position:relative; left:0; width:0.5em; height:0.5em; background-color:lightcoral; opacity:1;"></span> Modded
+                </div>
+                <div class="vline"                          style="z-index:10100; bottom:00.25em; right:00.25em; height:03.75em;"></div>
+                <div class="DPSValDisp" id="WDPSVal_##"     style="z-index:10100; bottom:01.75em; right:10.50em;  width:05.00em; text-align:right; direction:rtl;">WDPS</div>
+                <div class="DPSValDisp" id="IDPSVal_##"     style="z-index:10100; bottom:01.75em; right:06.00em;  width:05.00em; text-align:right; direction:rtl;">IDPS</div>
+                <div class="DPSValDisp" id="MDPSVal_##"     style="z-index:10100; bottom:01.75em; right:00.50em;  width:05.00em; text-align:right; direction:rtl;">MDPS</div>
+                <div class="DPSValDisp" id="WSDPSVal_##"    style="z-index:10100; bottom:00.25em; right:10.50em;  width:05.00em; text-align:right; direction:rtl;">WSDPS</div>
+                <div class="DPSValDisp" id="ISDPSVal_##"    style="z-index:10100; bottom:00.25em; right:06.00em;  width:05.00em; text-align:right; direction:rtl;">ISDPS</div>
+                <div class="DPSValDisp" id="MSDPSVal_##"    style="z-index:10100; bottom:00.25em; right:00.50em;  width:05.00em; text-align:right; direction:rtl;">MSDPS</div>
+            </div>
         </div>
 
     </div>
 </div>
-<div>+</div>
-<div id="footer" style="position:relative;">
+<!--<div>+</div>-->
+<div id="footer" style="position:relative; clear:both;">
     <div id="footerText">
-        footer text
+        <b>WIP!</b><br />
+        Things I plan to add in rough order of priority:<br />
+        <ul>
+            <li>Damage from status effects</li>
+            <li>Force pause/stop animation</li>
+            <li>Enter stats into slots instead of having to add up your mod stats</li>
+            <li>Combining elements</li>
+            <li>Time to kill average & distribution, for certain enemies & selectable levels</li>
+            <li>Zoom & scaling</li>
+            <li>Arbitary number of builds</li>
+            <li>List/database of actual mods</li>
+            <li>List of weapons. This one's pretty tricky to deal with for weapons that deal damage in different phases (e.g. grenade launcher impact -> detonation, Zarr initial explosion -> bomblet explosions)</li>
+        </ul>
+        
     </div>
 </div>
 

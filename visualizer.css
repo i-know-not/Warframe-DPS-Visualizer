@@ -39,8 +39,8 @@ h3.hPanel
 {
     margin:0;
     padding:0.25em 1em 0.25em 0.5em;
-    font-size:1.1em;
-    font-weight:normal;
+    font-size:1.0em;
+    font-weight:bold;
     /*
     background:white;
     color:#a8a8a8;
@@ -49,9 +49,26 @@ h3.hPanel
     color:white;
 }
 
+.hline
+{
+    position:absolute;
+    height:1px;
+    background:#a8a8a8;
+}
+
+.vline
+{
+    position:absolute;
+    width:1px;
+    background:#a8a8a8;
+}
+
 .build
 {
-    display:inline-flex;
+    /* display:inline-flex; */
+    display:flex;
+    float:left;
+    clear:both;
     margin:0 0.5em 0.5em 0.5em;
     border-radius:0.5em;
     overflow:hidden;
@@ -68,6 +85,7 @@ h3.hPanel
     min-width:3em;
     width:3em;
     margin:0 0.5em 0 0;
+    z-index:100000;
     border:none;
     text-align:center;
     vertical-align:center;
@@ -91,14 +109,17 @@ h3.hPanel
     background:white;
 }
 
+/*
 .panel > *
 {
     margin:0.25em 0.5em 0.25em 0.5em;
 }
+*/
 
 .panelForm
 {
     margin:0;
+    font-size:0.9em;
 }
 
 .panelForm > *
@@ -125,8 +146,9 @@ h3.hPanel
 
 .DPSPanel
 {
-    min-width:80em;
-    width:80em;
+    min-width:83em;
+    width:83em;
+    overflow:visible;
 }
 
 /*
@@ -139,7 +161,7 @@ h3.hPanel
 .dStatInput
 {
     overflow:visible;
-    margin:0.5em;
+    margin:0.2em 0.4em;
 }
 
 .iStatInput
@@ -200,6 +222,7 @@ h3.hPanel
     grid-template-columns:auto auto;
     grid-template-rows:auto auto auto auto auto auto auto;
     justify-content:space-between;
+    vertical-align:bottom;
 }
 
 .containerGridDamageModType
@@ -213,14 +236,28 @@ h3.hPanel
 
 .itemGridDamageColA
 {
+    display:flex;
     grid-column:1;
     text-align: left;
+    /* font-size:0.9em; */
+}
+
+.itemGridDamageColA > *
+{
+    align-self:flex-end;
 }
 
 .itemGridDamageColB
 {
+    display:flex;
     grid-column:2;
     text-align: right;
+    /* font-size:0.9em; */
+}
+
+.itemGridDamageColB > *
+{
+    align-self:flex-end;
 }
 
 .dt
@@ -228,83 +265,132 @@ h3.hPanel
     display:inline-block;
     width:1em;
     height:1em;
-    background-color:transparent;
+    background-color:transparent !important;
     background-size:contain;
+    background-repeat:no-repeat;
+    /* border-width:1px; */
+    /* border-style:solid; */
+    /* opacity:0.8; */
 }
 
+.Impact,
 .impact
 {
     background-image:url("Impact_b.png");
+    background-color:rgba(127,127,191,0.125);
+    border-color:black;
 }
 
+.Puncture,
 .puncture
 {
     background-image:url("Puncture_b.png");
+    background-color:rgba(127,191,127,0.125);
+    border-color:black;
 }
 
+.Slash,
 .slash
 {
     background-image:url("Slash_b.png");
+    background-color:rgba(191,127,127,0.125);
+    border-color:black;
 }
 
+.Cold,
 .cold
 {
     background-image:url("Cold_b.png");
+    background-color:rgba( 17, 85,154,0.125);
+    border-color:     rgb( 17, 85,154);
 }
 
+.Electricity,
 .electricity
 {
     background-image:url("Electricity_b.png");
+    background-color:rgba( 95,  4,180,0.125);
+    border-color:     rgb( 95,  4,180);
 }
 
+.Heat,
 .heat
 {
     background-image:url("Heat_b.png");
+    background-color:rgba(153,  0,  0,0.125);
+    border-color:     rgb(153,  0,  0);
 }
 
+.Toxin,
 .toxin
 {
     background-image:url("Toxin_b.png");
+    background-color:rgba( 87,136,136,0.125);
+    border-color:     rgb( 87,136,136);
 }
 
+.Blast,
 .blast
 {
     background-image:url("Blast_b.png");
+    background-color:rgba(180,  95,  4,0.125);
+    border-color:     rgb(180,  95,  4);
 }
 
+.Corrosive,
 .corrosive
 {
     background-image:url("Corrosive_b.png");
+    background-color:rgba(  0,153, 51,0.125);
+    border-color:     rgb(  0,153, 51);
 }
 
+.Gas,
 .gas
 {
     background-image:url("Gas_b.png");
+    background-color:rgba(113,144, 94,0.125);
+    border-color:     rgb(113,144, 94);
 }
 
+.Magnetic,
 .magnetic
 {
     background-image:url("Magnetic_b.png");
+    background-color:rgba(  0, 51,204,0.125);
+    border-color:     rgb(  0, 51,204);
 }
 
+.Radiation,
 .radiation
 {
     background-image:url("Radiation_b.png");
+    background-color:rgba(  8,138,133,0.125);
+    border-color:     rgb(  8,138,133);
 }
 
+.Viral,
 .viral
 {
     background-image:url("Viral_b.png");
+    background-color:rgba(136,106,  8,0.125);
+    border-color:     rgb(136,106,  8);
 }
 
+.Void,
 .void
 {
     background-image:url("VoidTearIcon_b.png");
+    background-color:rgba(186,176,  0,0.125);
+    border-color:     rgb(186,176,  0);
 }
 
-.true
+.Absolute,
+.absolute
 {
     background-image:url("LotusBlack.png");
+    background-color:rgba(  0,  0,  0,0.125);
+    border-color:     rgb(  0,  0,  0);
 }
 
 .statDisp > *
@@ -315,13 +401,26 @@ h3.hPanel
 .dispFade
 {
     position:absolute;
-    width:100%;
-    height:100%;
     top:0;
+    /* bottom:3em; */
+    bottom:0;
     left:0;
-    box-shadow:0 0 2em 1em white inset;
+    right:0;
+    box-shadow:0 0 1.25em 0.75em white inset;
     background:transparent;
     z-index:9990 !important;
+    pointer-events: none;
+}
+
+.containerGridDPSType
+{
+    display:grid;
+    grid-template-columns:8em 5em 4.5em 5.5em;
+    grid-template-rows:auto;
+    justify-content:space-between;
+    font-size:0.9em;
+    background-color:rgba(255,255,255,0.6);
+    box-shadow:0 0 1.25em 0.75em rgba(255,255,255,0.6);
 }
 
 .DPSDisp
@@ -329,11 +428,65 @@ h3.hPanel
     position:relative;
     /*width:39em;*/
     height:25em;
+    overflow:hidden;
+}
+
+.itemGridDPSColA
+{
+    grid-column:1;
+}
+
+.itemGridDPSColB
+{
+    grid-column:2;
+}
+
+.itemGridDPSColC
+{
+    grid-column:3;
+}
+
+.itemGridDPSColD
+{
+    grid-column:4;
 }
 
 .DPSValDisp
 {
-    text-align:right;
+    position:absolute;
+    white-space:nowrap;
+    overflow:visible;
+    /*
+    color:#afafaf;
+    mix-blend-mode:exclusion;
+    */
+    /*text-shadow:0 0 0.2rem #FFFFFF;*/
+    /*text-align:right;*/
+}
+
+.DPSBarDisp
+{
+    position:absolute;
+    box-sizing:border-box;
+    height:3em;
+    bottom:0;
+    left:-28.75em;
+    right:0;
+    background-color:rgba(255,255,255,0.5);
+    box-shadow:0 0 1.25em 0.75em rgba(255,255,255,0.5);
+    /*border-top:1px solid #a8a8a8;*/
+}
+
+.DPSBar
+{
+    position:absolute;
+    /*box-sizing:border-box;*/
+    left:-28.75em;
+    height:1.25em;
+    width:1.25em;
+    /*border:1px solid black;*/
+    outline:1px solid black;
+    opacity:0.75;
 }
 
 .dispOrigin
@@ -348,21 +501,21 @@ h3.hPanel
 {
     /*transform:scale(0.2);*/
     left:2em;
-    top:20%;
+    top:18%;
 }
 
 .DPSSttsDispOrigin
 {
     /*transform:scale(0.15);*/
     left:2em;
-    top:60%;
+    top:50%;
 }
 
 .DPSRateDispOrigin
 {
     /*transform:scale(0.15);*/
-    left:70%;
-    top:90%;
+    left:80%;
+    top:80%;
 }
 
 .dispLabel
@@ -396,7 +549,7 @@ h3.hPanel
     width:1em;
     height:1em;
     transform-origin:0 100%;
-    border:1px solid black;
+    /* border:1px solid black; */
     /*box-shadow:0 0 0 1px black inset;*/
     /*transition: all 0.5s;*/
     /*background-color:transparent !important;*/
@@ -429,21 +582,25 @@ h3.hPanel
 .baseDisp
 {
     background-color:rgba(223,223,223,0.25);/*#dfdfdf3f;*/
+    border:1px solid black;
 }
 
 .dmgeDisp
 {
     background-color:rgba(159, 31, 31,0.125);/*#9f1f1f1f;*/
+    border:1px solid black;
 }
 
 .elemDisp
 {
     background-color:rgba( 47,127, 47,0.125);/*#2f7f2f1f;*/
+    border:1px solid black;
 }
 
 .multDisp
 {
     background-color:rgba(0  ,111,223,0.125);/*#006fdf1f;*/
+    border:1px solid black;
 }
 
 .wcrtDisp
@@ -455,6 +612,7 @@ h3.hPanel
 .mcrtDisp
 {
     background-color:rgba(223,223,  0,0.09375);/*#dfdf0017;*/
+    border:1px solid black;
 }
 
 .cdmgDisp
@@ -465,43 +623,63 @@ h3.hPanel
 
 .sttsDisp
 {
-    background-color:rgba(255, 159, 127,0.5);
-    outline:1px solid black;
-    border:none;
+    background-color:rgba(255,159,127,0.3);
+    /*outline:1px solid black;*/
+    border:1.5px solid rgba(0,0,0,0.7);
+}
+
+.stefDisp
+{
+    background-image:none !important;
+    border-width:1px;
+    border-style:solid;
+    /* background-color:rgba(255, 159, 127,0.1); */
 }
 
 .stslDisp
 {
     background-color:transparent;
-    border:1px solid rgba(  0,  0,  0,0.2);
+    border:1.5px solid rgba(  0,  0,  0,0.3);
 }
 
 .sttsText
 {
     white-space:nowrap;
     color:black;
-    background-color:rgba(255, 255, 255,0.75);
+    background-color:rgba(255, 255, 255,0.5);
 }
 
 .sttGraph
 {
     padding:0;
     margin:0;
+    outline:2px solid rgba(0,0,0,0.5);
 }
 
 .sttSVG
 {
-    width:24em;
+    width:20em;
     height:4em;
-    border:1px solid black;
+    box-sizing:border-box;
+    /*border:1px solid black;*/
+    border-top:1px solid rgba(0,0,0,0.1);
+    border-left:1px solid rgba(0,0,0,0.1);
+    /*outline:1px solid black;*/
 }
 
 .rateDisp
 {
     background-color:rgba(127,127,127,1);/*#dfdfdf3f;*/
+    border:1px solid black;
 }
 
 #container
 {
-    overflow-x:scroll;
+    overflow:visible;
+    /*overflow-x:scroll;*/
+}
+
+#footerText
+{
+    margin-left:0.5em;
 }
